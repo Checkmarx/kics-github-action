@@ -1,3 +1,7 @@
-FROM checkmarx/kics:latest
+FROM alpine:latest
 
-ENTRYPOINT ["/app/bin/kics","-p /github/workspace/$INPUT_DIRECTORY"]
+COPY entrypoint.sh /entrypoint.sh
+
+RUN chmod +x /entrypoint.sh
+
+ENTRYPOINT ["/entrypoint.sh"]
