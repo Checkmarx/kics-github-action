@@ -4,7 +4,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/releases)
 [![Open Issues](https://img.shields.io/github/issues-raw/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/issues)
 
-## Integrate KICS into your GitHub workflows, using KICS Github Action to make your IaC more secured  
+## Integrate KICS into your GitHub workflows, using KICS Github Action to make your IaC more secure  
 
 **KICS** (pronounced as 'kick-s') or **Kicscan** is an open source solution for static code analysis of Infrastructure as Code.
 
@@ -17,7 +17,7 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <img alt="Terraform" src="images/logo-terraform.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="Kubernetes" src="images/logo-k8s.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="Docker" src="images/logo-docker.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="CloudFormation" src="images/logo-cf.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="Ansible" src="images/logo-ansible.png" width="150">
 
 
-###Please find more info in the official website: <a href="https://kics.io">kics.io</a>
+### Please find more info in the official website: <a href="https://kics.io">kics.io</a>
 
 ## Inputs
 
