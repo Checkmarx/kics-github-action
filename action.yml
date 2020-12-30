@@ -3,10 +3,11 @@ name: 'kics Github Action'
 description: 'Run kics scan against IaC projects'
 inputs:
   directory:
-    description: 'directory with infrastructure code to scan'
-    default: '.'
-    required: false
-
+    description: 'directory with IaC to scan'
+    required: true
+outputs:
+  results:
+    description: 'the result of kics scan'
 branding:
   icon: 'codesandbox'
   color: 'green'
