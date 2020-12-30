@@ -1,5 +1,5 @@
 #!/bin/bash
-DATETIME="`date +%Y-%m-%d` `date +%T%z`"
+DATETIME="`date '+%H:%M'`"
 
 if [ -z "$INPUT_PATH" ]
 then
