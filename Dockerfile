@@ -1,6 +1,7 @@
-FROM alpine:latest
+FROM ubuntu:18.04
 
-RUN apk update && apk add curl
+RUN  apt-get update 
+RUN  apt-get install -y wget
 
 COPY entrypoint.sh /entrypoint.sh
 
