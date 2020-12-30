@@ -29,14 +29,6 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 | queries |  | path to directory with queries (default "./assets/queries") | String | No | ./assets/queries downloaded with the binaries
 | verbose | true | verbose scan | Boolean | No | false |
 
-
-
-## Outputs
-
-The default output format for this GitHub Action is a [SARIF](https://docs.github.com/en/github/finding-security-vulnerabilities-and-errors-in-your-code/sarif-support-for-code-scanning) output report stored in the working directory as **./cx.sarif**
-
-For full documentation on all the supported output formats and defect management integration, please see the [following](https://github.com/checkmarx-ltd/cx-flow/wiki/Bug-Trackers-and-Feedback-Channels).  
-
 ## Example usage
 
 ```
