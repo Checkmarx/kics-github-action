@@ -2,9 +2,20 @@
 name: 'kics Github Action'
 description: 'Run kics scan against IaC projects'
 inputs:
-  directory:
-    description: 'directory with IaC to scan'
+  path:
+    description: 'path to file or directory to scan'
     required: true
+  output_path:
+    description: 'file path to store result in json format'
+    required: false
+  payload_path:
+    description: 'file path to store source internal representation in JSON format'
+    required: false
+  queries:
+    description: 'path to directory with queries (default "./assets/queries")'
+    required: false
+  versbose:
+    description: 'verbose scan'
 outputs:
   results:
     description: 'the result of kics scan'
@@ -14,3 +25,9 @@ branding:
 runs:
   using: 'docker'
   image: 'Dockerfile'
+  args:
+    - ${{ inputs.path }}
+    - ${{ inputs.output_path }}
+    - ${{ inputs.payload_path }}
+    - ${{ inputs.queries }}
+    - ${{ inputs.versbose }}
