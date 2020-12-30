@@ -14,7 +14,7 @@ inputs:
   queries:
     description: 'path to directory with queries (default "./assets/queries")'
     required: false
-  versbose:
+  verbose:
     description: 'verbose scan'
 outputs:
   results:
