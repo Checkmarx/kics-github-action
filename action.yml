@@ -1,0 +1,15 @@
+# action.yml
+name: 'kics Github Action'
+description: 'Run kics scan against IaC projects'
+inputs:
+  directory:
+    description: 'directory with infrastructure code to scan'
+    default: '.'
+    required: false
+
+branding:
+  icon: 'codesandbox'
+  color: 'green'
+runs:
+  using: 'docker'
+  image: 'Dockerfile'
