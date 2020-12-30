@@ -13,7 +13,7 @@ version=`echo $tag | sed -r 's/^.{1}//'`
 echo 'version is' $version
 
 echo "Downloading latest kics binaries"
-wget -c "https://github.com/Checkmarx/kics/releases/download/${tag}/kics_${version}_linux_x64.tar.gz" -O - | tar -xz
+wget -q -c "https://github.com/Checkmarx/kics/releases/download/${tag}/kics_${version}_linux_x64.tar.gz" -O - | tar -xz &>/dev/null
 
 echo "about to scan directory" $INPUT_PATH
 ./kics $INPUT_PARAM $OUTPUT_PATH_PARAM $PAYLOAD_PATH_PARAM $QUERIES_PARAM $VERBOSE_PARAM
