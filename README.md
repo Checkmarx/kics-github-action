@@ -1,4 +1,4 @@
-# kics Github Action ![kics](images/icon-32x32.png) <img src="images/github.png" alt="Github" width="40" height="40">
+# KICS Github Action ![kics](images/icon-32x32.png) <img src="images/github.png" alt="Github" width="40" height="40">
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL3.0-yellow.svg)](https://www.gnu.org/licenses)
 [![Latest Release](https://img.shields.io/github/v/release/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/releases)
