@@ -6,6 +6,17 @@
 
 kics GitHub Action.  
 
+**KICS** (pronounced as 'kick-s') or **Kicscan** is an open source solution for static code analysis of Infrastructure as Code.
+
+**K**eeping **I**nfrastructure as **C**ode **S**ecure (in short **KICS**) is a must-have for any cloud native project. With KICS, finding security vulnerabilities, compliance issues, and infrastructure misconfigurations happens early in the development cycle, when fixing these is straightforward and cheap.
+
+It is as simple as running a CLI tool, making it easy to integrate into any project CI.
+
+#### Supported Platforms
+
+<img alt="Terraform" src="images/logo-terraform.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="Kubernetes" src="images/logo-k8s.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="Docker" src="images/logo-docker.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="CloudFormation" src="images/logo-cf.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="Ansible" src="images/logo-ansible.png" width="150">
+
+
 Please find more info in the official website: <a href="https://kics.io">kics.io</a>
 
 ## Inputs
