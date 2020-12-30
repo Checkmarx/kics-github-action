@@ -1,3 +1,3 @@
 FROM checkmarx/kics:latest
 
-ENTRYPOINT ["/app/bin/kics","-p $INPUT_DIRECTORY"]
+ENTRYPOINT ["/app/bin/kics","-p /github/workspace/$INPUT_DIRECTORY"]
