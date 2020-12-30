@@ -14,4 +14,4 @@ wget -c "https://github.com/Checkmarx/kics/releases/download/${tag}/kics_${versi
 
 echo "about to scan directory" $INPUT_DIRECTORY
 
-./kics -p $INPUT_DIRECTORY 
+./kics -p $INPUT_DIRECTORY -o results.json
