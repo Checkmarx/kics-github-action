@@ -1,6 +1,6 @@
 # action.yml
-name: 'kics Github Action'
-description: 'Run kics scan against IaC projects'
+name: 'KICS Github Action'
+description: 'Run KICS scan against IaC projects'
 inputs:
   path:
     description: 'path to file or directory to scan'
@@ -18,7 +18,7 @@ inputs:
     description: 'verbose scan'
 outputs:
   results:
-    description: 'the result of kics scan'
+    description: 'the result of KICS scan'
 branding:
   icon: 'shield'
   color: 'green'
