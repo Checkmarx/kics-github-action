@@ -20,7 +20,7 @@ outputs:
   results:
     description: 'the result of kics scan'
 branding:
-  icon: 'codesandbox'
+  icon: 'shield'
   color: 'green'
 runs:
   using: 'docker'
