@@ -31,4 +31,5 @@ wget -q -c "https://github.com/Checkmarx/kics/releases/download/${tag}/kics_${ve
 echo "${DATETIME} - INF : about to scan directory $INPUT_PATH"
 echo "${DATETIME} - INF : kics command kics $INPUT_PARAM $OUTPUT_PATH_PARAM $PAYLOAD_PATH_PARAM $QUERIES_PARAM $VERBOSE_PARAM"
 echo "${DATETIME} - INF : current directory - ${PWD}"
+ls /usr/bin
 kics $INPUT_PARAM $OUTPUT_PATH_PARAM $PAYLOAD_PATH_PARAM $QUERIES_PARAM $VERBOSE_PARAM
