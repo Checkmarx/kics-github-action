@@ -28,8 +28,7 @@ echo "${DATETIME} - INF version is $version"
 echo "${DATETIME} - INF downloading latest kics binaries kics_${version}_linux_x64.tar.gz"
 wget -q -c "https://github.com/Checkmarx/kics/releases/download/${tag}/kics_${version}_linux_x64.tar.gz" -O - | tar -xz --directory /usr/bin &>/dev/null
 
+echo "${DATETIME} - INF : current directory - ${PWD}"
 echo "${DATETIME} - INF : about to scan directory $INPUT_PATH"
 echo "${DATETIME} - INF : kics command kics $INPUT_PARAM $OUTPUT_PATH_PARAM $PAYLOAD_PATH_PARAM $QUERIES_PARAM $VERBOSE_PARAM"
-echo "${DATETIME} - INF : current directory - ${PWD}"
-ls /usr/bin
 kics $INPUT_PARAM $OUTPUT_PATH_PARAM $PAYLOAD_PATH_PARAM $QUERIES_PARAM $VERBOSE_PARAM
