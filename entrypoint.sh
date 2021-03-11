@@ -17,7 +17,7 @@ if [ ! -z "$INPUT_QUERIES" ]
 then
     QUERIES_PARAM="-q $INPUT_QUERIES"
 else
-    QUERIES_PARAM="-q /usr/bin/assets/queries"
+    QUERIES_PARAM="-q /app/bin/assets/queries"
 fi
 
 cd $GITHUB_WORKSPACE
