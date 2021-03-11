@@ -4,7 +4,7 @@
 [![Latest Release](https://img.shields.io/github/v/release/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/releases)
 [![Open Issues](https://img.shields.io/github/issues-raw/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/issues)
 
-## Integrate KICS into your GitHub workflows, using KICS Github Action to make your IaC more secure  
+## Integrate KICS into your GitHub workflows, using KICS Github Action to make your IaC more secure   
 
 **KICS** (pronounced as 'kick-s') or **Kicscan** is an open source solution for static code analysis of Infrastructure as Code.
 
