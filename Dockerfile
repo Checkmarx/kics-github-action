@@ -1,7 +1,4 @@
-FROM ubuntu:18.04
-
-RUN  apt-get update && \ 
-     apt-get install -y wget curl
+FROM elitcx/kics:alpine
 
 COPY entrypoint.sh /entrypoint.sh
 
