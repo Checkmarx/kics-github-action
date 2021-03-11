@@ -1,4 +1,6 @@
 #!/bin/bash
 DATETIME="`date '+%H:%M'`"
 
-./app/bin/kics -p $GITHUB_WORKSPACE/$INPUTS_PATH -o $INPUTS.OUTPUT_PATH
+echo "about to run kics scan on $INPUTS_PATH"
+cd /github/workspace
+./app/bin/kics -p $INPUTS_PATH -o $INPUTS.OUTPUT_PATH
