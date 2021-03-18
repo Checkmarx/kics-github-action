@@ -36,7 +36,7 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 | queries            |                                         | path to directory with queries (default "./assets/queries")      | String  | No       | ./assets/queries downloaded with the binaries |
 | verbose            | true                                    | verbose scan                                                     | Boolean | No       | false                                         |
 
-## Simple Example usage
+## Simple usage example
 
 ```yaml
     # Steps represent a sequence of tasks that will be executed as part of the job
@@ -55,7 +55,7 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
           cat results.json
 ```
 
-## Example Using Docker Runner and SARIF report
+## Example using docker-runner and SARIF report
 
 checkmarx/kics-action@docker-runner branch runs an alpine based linux container (`checkmarx/kics:nightly-alpine`) that doesn't require downloading kics binaries and queries in the `entrypoint.sh`
 
@@ -100,7 +100,9 @@ jobs:
         with:
           sarif_file: results-dir/results.sarif
 ```
-## Example using docker-runner and config file
+## Example using docker-runner and a config file
+
+Check [configuration file](./configuration-file.md) reference for more options.
 
 ```yaml
 name: scan with KICS using config file
@@ -120,6 +122,7 @@ jobs:
         # make sure results dir is created
         run: mkdir -p results-dir
       - name: Create config file
+        # creating a heredoc config file
         run: |
           cat <<EOF >>kics.config
           {
@@ -130,7 +133,6 @@ jobs:
             "no-color": false,
             "no-progress": true,
             "output-path": "./results-dir",
-            "path": "terraform,ansible",
             "payload-path": "file path to store source internal representation in JSON format",
             "preview-lines": 5,
             "report-formats": "json,sarif",
