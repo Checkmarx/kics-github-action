@@ -5,8 +5,29 @@ inputs:
   path:
     description: 'path to file or directory to scan'
     required: true
+  config:
+    description: 'path to configuration file'
+    required: false
+  platform_type:
+    description: 'case insensitive list of platform types to scan'
+    required: false
+  exclude_paths:
+    description: "exclude paths from scan, supports glob, quoted comma separated string example: './shouldNotScan/*,somefile.txt'"
+    required: false
+  exclude_queries:
+    description: exclude queries by providing the query ID
+    required: false
+  exclude_categories:
+    description: exclude categories by providing its name, can be provided multiple times or as a comma separated string
+    required: false
+  exclude_results:
+    description: "exclude results by providing the similarity ID of a result"
+    required: false
+  output_formats:
+    description: "formats in which the results report will be exported (json, sarif)"
+    required: false
   output_path:
-    description: 'file path to store result in json format'
+    description: 'file path to store results report (json, sarif)'
     required: false
   payload_path:
     description: 'file path to store source internal representation in JSON format'
@@ -27,7 +48,14 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.path }}
+    - ${{ inputs.config }}
+    - ${{ inputs.platform_type }}
+    - ${{ inputs.exclude_paths }}
+    - ${{ inputs.exclude_queries }}
+    - ${{ inputs.exclude_categories }}
+    - ${{ inputs.exclude_results }}
+    - ${{ inputs.output_formats }}
     - ${{ inputs.output_path }}
     - ${{ inputs.payload_path }}
     - ${{ inputs.queries }}
-    - ${{ inputs.versbose }}
+    - ${{ inputs.verbose }}
