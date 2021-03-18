@@ -5,7 +5,7 @@ inputs:
   path:
     description: 'path to file or directory to scan'
     required: true
-  config:
+  config_path:
     description: 'path to configuration file'
     required: false
   platform_type:

@@ -24,7 +24,7 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 | Variable           | Example Value &nbsp;                    | Description &nbsp;                                               | Type    | Required | Default                                       |
 | ------------------ | --------------------------------------- | ---------------------------------------------------------------- | ------- | -------- | --------------------------------------------- |
 | path               | terraform                               | path to file or directory to scan                                | String  | Yes      | N/A                                           |
-| config             | ./kics.config                           | path to configuration file                                       | String  | No       | N/A                                           |
+| config_path             | ./kics.config                           | path to configuration file                                       | String  | No       | N/A                                           |
 | platform_type      | terraform,ansible                       | case insensitive list of platform types to scan                  | String  | No       | All platforms                                 |
 | exclude_paths      | ./shouldNotScan/*,somefile.txt          | exclude paths from scan, supports glob, comma separated list     | String  | No       | N/A                                           |
 | exclude_queries    | a227ec01-f97a-4084-91a4-47b350c1db54    | exclude queries by providing the query ID, comma separated list  | String  | No       | N/A                                           |
