@@ -46,9 +46,9 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
     # Scan Iac with kics
     - name: run kics Scan
       uses: checkmarx/kics-action@v1.0
-        with:
-          path: 'terraform'
-          output_path: 'results.json'
+      with:
+        path: 'terraform'
+        output_path: 'results.json'
     # Display the results in json format
     - name: display kics results
       run: |
