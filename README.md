@@ -84,7 +84,7 @@ jobs:
           # it will generate the specified reports file named 'results.{extension}'
           # in this example it will generate:
           # - results-dir/results.json
-          # - results-dir/results.json
+          # - results-dir/results.sarif
           output_path: results-dir
           platform_type: terraform
           output_formats: 'json,sarif'
