@@ -44,15 +44,15 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
     - uses: actions/checkout@v2
     # Scan Iac with kics
-     - name: run kics Scan
-        uses: checkmarx/kics-action@v1.0
-        with:
-          path: 'terraform'
-          output_path: 'results.json'
-	  # Display the results in json format
-     - name: display kics results
-        run: |
-          cat results.json
+    - name: run kics Scan
+      uses: checkmarx/kics-action@v1.0
+      with:
+        path: 'terraform'
+        output_path: 'results.json'
+    # Display the results in json format
+    - name: display kics results
+      run: |
+        cat results.json
 ```
 
 ## Example using docker-runner and SARIF report
@@ -84,7 +84,7 @@ jobs:
           # it will generate the specified reports file named 'results.{extension}'
           # in this example it will generate:
           # - results-dir/results.json
-          # - results-dir/results.json
+          # - results-dir/results.sarif
           output_path: results-dir
           platform_type: terraform
           output_formats: 'json,sarif'
@@ -102,7 +102,7 @@ jobs:
 ```
 ## Example using docker-runner and a config file
 
-Check [configuration file](./configuration-file.md) reference for more options.
+Check [configuration file](https://github.com/Checkmarx/kics/blob/master/docs/configuration-file.md) reference for more options.
 
 ```yaml
 name: scan with KICS using config file
