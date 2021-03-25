@@ -14,7 +14,13 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 
 #### Supported Platforms
 
-<img alt="Terraform" src="images/logo-terraform.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="Kubernetes" src="images/logo-k8s.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="Docker" src="images/logo-docker.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="CloudFormation" src="images/logo-cf.png" width="150">&nbsp;&nbsp;&nbsp;<img alt="Ansible" src="images/logo-ansible.png" width="150">
+<img alt="Terraform" src="images/logo-terraform.png" width="150">&nbsp;&nbsp;&nbsp;
+<img alt="Kubernetes" src="images/logo-k8s.png" width="150">&nbsp;&nbsp;&nbsp;
+<img alt="Docker" src="images/logo-docker.png" width="150">&nbsp;&nbsp;&nbsp;
+<br>
+<img alt="CloudFormation" src="images/logo-cf.png" width="150">&nbsp;&nbsp;&nbsp;
+<img alt="Ansible" src="images/logo-ansible.png" width="150">&nbsp;&nbsp;&nbsp;
+<img alt="Helm" src="images/logo-helm.png" width="61" height="70">&nbsp;&nbsp;&nbsp;
 
 
 ### Please find more info in the official website: <a href="https://kics.io">kics.io</a>
