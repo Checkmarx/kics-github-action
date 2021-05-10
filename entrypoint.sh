@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/ash
 DATETIME="`date '+%H:%M'`"
 
 if [ -z "$INPUT_PATH" ]
@@ -18,8 +18,8 @@ fi
 [[ ! -z "$INPUT_EXCLUDE_CATEGORIES" ]] && EXCLUDE_CATEGORIES_PARAM="--exclude-categories $INPUT_EXCLUDE_CATEGORIES"
 [[ ! -z "$INPUT_OUTPUT_FORMATS" ]] && OUTPUT_FORMATS_PARAM="--report-formats $INPUT_OUTPUT_FORMATS"
 [[ ! -z "$INPUT_PLATFORM_TYPE" ]] && PLATFORM_TYPE_PARAM="--type $INPUT_PLATFORM_TYPE"
-[[ ! -z "$INPUT_IGNORE_ON_EXIT" ]] && IGNORE_ON_EXIT_PARAM="--ignore_on_exit $INPUT_IGNORE_ON_EXIT"
-[[ ! -z "$INPUT_FAIL_ON" ]] && FAIL_ON_PARAM="--fail_on $INPUT_FAIL_ON"
+[[ ! -z "$INPUT_IGNORE_ON_EXIT" ]] && IGNORE_ON_EXIT_PARAM="--ignore-on-exit $INPUT_IGNORE_ON_EXIT"
+[[ ! -z "$INPUT_FAIL_ON" ]] && FAIL_ON_PARAM="--fail-on $INPUT_FAIL_ON"
 [[ ! -z "$INPUT_TIMEOUT" ]] && TIMEOUT_PARAM="--timeout $INPUT_TIMEOUT"
 [[ ! -z "$INPUT_PROFILING" ]] && PROFILING_PARAM="--profiling $INPUT_PROFILING"
 
@@ -29,18 +29,10 @@ if [ ! -z "$INPUT_QUERIES" ]
 then
     QUERIES_PARAM="-q $INPUT_QUERIES"
 else
-    QUERIES_PARAM="-q /usr/bin/assets/queries"
+    QUERIES_PARAM="-q /app/bin/assets/queries"
 fi
 
-tag=`curl --silent "https://api.github.com/repos/Checkmarx/kics/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/'`
-echo "${DATETIME} - INF latest tag is $tag"
-version=`echo $tag | sed -r 's/^.{1}//'`
-echo "${DATETIME} - INF version is $version"
-
-echo "${DATETIME} - INF downloading latest kics binaries kics_${version}_linux_x64.tar.gz"
-wget -q -c "https://github.com/Checkmarx/kics/releases/download/${tag}/kics_${version}_linux_x64.tar.gz" -O - | tar -xz --directory /usr/bin &>/dev/null
-
-echo "${DATETIME} - INF : current directory - ${PWD}"
+cd $GITHUB_WORKSPACE
 echo "${DATETIME} - INF : about to scan directory $INPUT_PATH"
 echo "${DATETIME} - INF : kics command kics $INPUT_PARAM $OUTPUT_PATH_PARAM $OUTPUT_FORMATS_PARAM $PLATFORM_TYPE_PARAM $PAYLOAD_PATH_PARAM $CONFIG_PATH_PARAM $EXCLUDE_PATHS_PARAM $EXCLUDE_CATEGORIES_PARAM $EXCLUDE_RESULTS_PARAM $EXCLUDE_QUERIES_PARAM $QUERIES_PARAM $VERBOSE_PARAM $IGNORE_ON_EXIT_PARAM $FAIL_ON_PARAM $TIMEOUT_PARAM $PROFILING_PARAM"
 kics scan --no-progress $INPUT_PARAM $OUTPUT_PATH_PARAM $OUTPUT_FORMATS_PARAM $PLATFORM_TYPE_PARAM $PAYLOAD_PATH_PARAM $CONFIG_PATH_PARAM $EXCLUDE_PATHS_PARAM $EXCLUDE_CATEGORIES_PARAM $EXCLUDE_RESULTS_PARAM $EXCLUDE_QUERIES_PARAM $QUERIES_PARAM $VERBOSE_PARAM $IGNORE_ON_EXIT_PARAM $FAIL_ON_PARAM $TIMEOUT_PARAM $PROFILING_PARAM

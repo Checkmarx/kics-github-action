@@ -130,12 +130,11 @@ You can only enable one profiler at a time, CPU or MEM.
         cat results.json
 ```
 
-## Example using docker-runner and SARIF report
+## Uploading SARIF report
 
-checkmarx/kics-action@docker-runner branch runs an alpine based linux container (`checkmarx/kics:nightly-alpine`) that doesn't require downloading kics binaries and queries in the `entrypoint.sh`
 
 ```yaml
-name: scan with KICS docker-runner
+name: scan with KICS and upload SARIF
 
 on:
   pull_request:
@@ -152,7 +151,7 @@ jobs:
         # make sure results dir is created
         run: mkdir -p results-dir
       - name: Run KICS Scan with SARIF result
-        uses: checkmarx/kics-action@docker-runner
+        uses: checkmarx/kics-action@v1.2
         with:
           path: 'terraform'
           # when provided with a directory on output_path
@@ -176,7 +175,7 @@ jobs:
           sarif_file: results-dir/results.sarif
 ```
 
-## Example using docker-runner and a config file
+## Using configuration file
 
 Check [configuration file](https://github.com/Checkmarx/kics/blob/master/docs/configuration-file.md) reference for more options.
 
@@ -217,7 +216,7 @@ jobs:
           }
           EOF
       - name: Run KICS Scan using config
-        uses: checkmarx/kics-action@docker-runner
+        uses: checkmarx/kics-action@v1.2
         with:
           path: 'terraform'
           config_path: ./kics.config
