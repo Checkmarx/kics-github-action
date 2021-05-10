@@ -3,8 +3,20 @@ name: 'KICS Github Action'
 description: 'Run KICS scan against IaC projects'
 inputs:
   path:
-    description: 'path to file or directory to scan'
+    description: 'paths to a file or directories to scan, accepts a comma separated list'
     required: true
+  ignore_on_exit:
+    description: 'defines which non-zero exit codes should be ignored (all, results, errors, none)'
+    required: false
+  fail_on:
+    description: 'comma separated list of which severities returns exit code !=0'
+    required: false
+  timeout:
+    description: 'number of seconds the query has to execute before being canceled'
+    required: false
+  profiling:
+    description: 'turns on profiler that prints resource consumption in the logs during the execution (CPU, MEM)'
+    required: false
   config_path:
     description: 'path to configuration file'
     required: false
@@ -48,6 +60,10 @@ runs:
   image: 'Dockerfile'
   args:
     - ${{ inputs.path }}
+    - ${{ inputs.ignore_on_exit }}
+    - ${{ inputs.fail_on }}
+    - ${{ inputs.timeout }}
+    - ${{ inputs.profiling }}
     - ${{ inputs.config }}
     - ${{ inputs.platform_type }}
     - ${{ inputs.exclude_paths }}
