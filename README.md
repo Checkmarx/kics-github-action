@@ -20,7 +20,10 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <br>
 <img alt="CloudFormation" src="images/logo-cf.png" width="150">&nbsp;&nbsp;&nbsp;
 <img alt="Ansible" src="images/logo-ansible.png" width="150">&nbsp;&nbsp;&nbsp;
-<img alt="Helm" src="images/logo-helm.png" width="61" height="70">&nbsp;&nbsp;&nbsp;
+<img alt="OpenAPI" src="images/logo-openapi.png" width="150">&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+<img alt="Helm" src="images/logo-helm.png" width="150">&nbsp;&nbsp;&nbsp;
 
 
 ### Please find more info in the official website: <a href="https://kics.io">kics.io</a>
@@ -29,7 +32,11 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 
 | Variable           | Example Value &nbsp;                    | Description &nbsp;                                               | Type    | Required | Default                                       |
 | ------------------ | --------------------------------------- | ---------------------------------------------------------------- | ------- | -------- | --------------------------------------------- |
-| path               | terraform                               | path to file or directory to scan                                | String  | Yes      | N/A                                           |
+| path               | terraform/main.tf,Dockerfile            | paths to a file or directories to scan, comma separated list     | String  | Yes      | N/A                                           |
+| ignore_on_exit     | results                                 | defines which non-zero exit codes should be ignored (all, results, errors, none) | String  | No       | none                  |
+| fail_on            | high,medium                             | comma separated list of which severities returns exit code !=0   | String  | No       | high,medium,low,info                          |
+| timeout            | 75                                      | number of seconds the query has to execute before being canceled | String  | No       | 60                                            |
+| profiling          | CPU                                     | turns on profiler that prints resource consumption in the logs during the execution (CPU, MEM) | String  | No   | N/A |
 | config_path        | ./kics.config                           | path to configuration file                                       | String  | No       | N/A                                           |
 | platform_type      | terraform,ansible                       | case insensitive list of platform types to scan                  | String  | No       | All platforms                                 |
 | exclude_paths      | ./shouldNotScan/*,somefile.txt          | exclude paths from scan, supports glob, comma separated list     | String  | No       | N/A                                           |
@@ -38,7 +45,7 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 | exclude_results    | 'd4a1fa80-d9d8-450f-87c2-e1f6669c41f8'  | exclude results by providing the similarity ID of a result       | String  | No       | N/A                                           |
 | output_formats     | 'json,sarif'                            | formats in which the results report will be exported             | String  | No       | json                                          |
 | output_path        | results.json                            | file path to store result in json format                         | String  | No       | N/A                                           |
-| payload_path       |                                         | file path to store source internal representation in JSON format | String  | No       | N/A                                           |
+| payload_path       | /tmp/mypayload.json                     | file path to store source internal representation in JSON format | String  | No       | N/A                                           |
 | queries            |                                         | path to directory with queries (default "./assets/queries")      | String  | No       | ./assets/queries downloaded with the binaries |
 | verbose            | true                                    | verbose scan                                                     | Boolean | No       | false                                         |
 
@@ -51,11 +58,73 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
     - uses: actions/checkout@v2
     # Scan Iac with kics
     - name: run kics Scan
-      uses: checkmarx/kics-action@v1.0
+      uses: checkmarx/kics-action@v1.2
       with:
-        path: 'terraform'
+        # scanning two directories: ./terraform/ ./cfn-templates/ plus a single file
+        path: 'terraform,cfn-templates,my-other-sub-folder/Dockerfile'
         output_path: 'results.json'
     # Display the results in json format
+    - name: display kics results
+      run: |
+        cat results.json
+```
+
+## Workflow failures
+
+By default KICS will fail your workflow on any results found.
+
+### Fail by severity usage example
+
+If want your pipeline just to fail on HIGH and MEDIUM severity results and KICS engine execution errors:
+
+```yaml
+    steps:
+    - uses: actions/checkout@v2
+    - name: run kics Scan
+      uses: checkmarx/kics-action@v1.2
+      with:
+        path: 'terraform,my-other-sub-folder/Dockerfile'
+        fail_on: high,medium
+        output_path: 'results.json'
+    - name: display kics results
+      run: |
+        cat results.json
+```
+
+### Don't fail on results
+
+If you want KICS to ignore the results and return exit status code 0 unless a KICS engine error happens:
+
+```yaml
+    steps:
+    - uses: actions/checkout@v2
+    - name: run kics Scan
+      uses: checkmarx/kics-action@v1.2
+      with:
+        path: 'terraform'
+        ignore_on_exit: results
+        output_path: 'results.json'
+    - name: display kics results
+      run: |
+        cat results.json
+```
+
+
+## Profiling KICS
+
+You can only enable one profiler at a time, CPU or MEM.
+
+> 📝 &nbsp; Please note that execution time may be impacted by enabling performance profiler due to sampling
+
+```yaml
+    steps:
+    - uses: actions/checkout@v2
+    - name: run kics Scan
+      uses: checkmarx/kics-action@v1.2
+      with:
+        path: 'terraform'
+        profiling: MEM
+        output_path: 'results.json'
     - name: display kics results
       run: |
         cat results.json
@@ -106,6 +175,7 @@ jobs:
         with:
           sarif_file: results-dir/results.sarif
 ```
+
 ## Example using docker-runner and a config file
 
 Check [configuration file](https://github.com/Checkmarx/kics/blob/master/docs/configuration-file.md) reference for more options.
