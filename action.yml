@@ -6,10 +6,10 @@ inputs:
     required: false
     default: "latest"
     description: "KICS version to use (defaults to latest)"
-  enable_pr_comments:
+  enable_comments:
     required: false
     default: false
-    description: "Enable PR comments"
+    description: "Enable pull request reprot comments"
   path:
     description: "paths to a file or directories to scan, accepts a comma separated list"
     required: true

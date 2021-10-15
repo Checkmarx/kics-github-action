@@ -1,10 +1,8 @@
 const https = require('https')
 const filepath = require('path');
 const tc = require('@actions/tool-cache');
-//const releaseDownloader = require('@fohlen/github-release-downloader');
+const core = require("@actions/core");
 const os = require('os');
-//const decompress = require('decompress');
-//const decompressTargz = require('decompress-targz');
 
 function getVersion(version) {
     let path = ''
@@ -63,41 +61,14 @@ function getReleaseInfo(release) {
         default:
             targetAsset = { size: 0, browser_download_url: '' };
     }
-    return { size: targetAsset.size, browser_download_url: targetAsset.browser_download_url, version: targetAsset.name };
+    return {
+        binary: 'kics',
+        size: targetAsset.size,
+        browser_download_url: targetAsset.browser_download_url,
+        version: release.tag_name,
+        arch: arch
+    };
 }
-
-// async function downloadReleaseFile(releaseAsset) {
-//     const dest = os.homedir();
-//     const releaseURL = releaseAsset.browser_download_url;
-
-//     console.log("Downloading", releaseURL);
-//     const baseName = releaseURL.substr(releaseURL.lastIndexOf("/") + 1);
-//     return releaseDownloader.downloadAsset(releaseURL, baseName, dest, () => {
-//         process.stdout.write(".");
-//     });
-// }
-
-// function decompressRelease(path) {
-//     const dest = os.homedir();
-//     return decompress(path, filepath.join(dest, 'kics'), {
-//         plugins: [
-//             decompressTargz()
-//         ]
-//     });
-// }
-
-// function getExecutableName() {
-//     const os = process.platform;
-//     switch (os) {
-//         case 'darwin':
-//         case 'linux':
-//             return 'kics';
-//         case 'win32':
-//             return 'kics.exe';
-//         default:
-//             return 'kics';
-//     }
-// }
 
 async function installKICS(kicsVersion) {
     let release = {};
@@ -107,20 +78,14 @@ async function installKICS(kicsVersion) {
         release = await getVersion(kicsVersion);
     }
     const releaseInfo = getReleaseInfo(release)
-
-    const kicsDownloadPath = await tc.downloadTool(releaseInfo.browser_download_url);
-    const kicsExtractedFolder = await tc.extractTar(kicsDownloadPath, filepath.join(os.homedir(), 'kics', releaseInfo.version));
-    const cachedPath = await tc.cacheDir(kicsExtractedFolder, 'kics', releaseInfo.version);
-    core.addPath(cachedPath);
-
-    // const releasePath = await downloadReleaseFile(releaseAsset, "./")
-    // console.log('\nDownloaded KICS release', releasePath);
-    // const files = await decompressRelease(releasePath);
-    // console.log('\nDecompressed KICS release', files.map(f => f.path));
-
-    // const kicsPath = filepath.join(os.homedir(), 'kics', getExecutableName());
-    // console.log('\nInstalling KICS to', kicsPath);
-    return kicsPath;
+    let kicsPath = tc.find(releaseInfo.binary, releaseInfo.version, releaseInfo.arch);
+    if (!kicsPath) {
+        core.info(`Downloading ${releaseInfo.binary} ${releaseInfo.version} ${releaseInfo.arch}`);
+        const kicsDownloadPath = await tc.downloadTool(releaseInfo.browser_download_url);
+        const kicsExtractedFolder = await tc.extractTar(kicsDownloadPath, filepath.join(os.homedir(), 'kics', releaseInfo.version));
+        kicsPath = await tc.cacheDir(kicsExtractedFolder, 'kics', releaseInfo.version, releaseInfo.arch);
+    }
+    core.addPath(kicsPath);
 }
 
 module.exports = {
