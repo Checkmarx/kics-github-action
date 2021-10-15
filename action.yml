@@ -1,27 +1,35 @@
 # action.yml
-name: 'KICS Github Action'
-description: 'Run KICS scan against IaC projects'
+name: "KICS Github Action"
+description: "Run KICS scan against IaC projects"
 inputs:
+  kics_version:
+    required: false
+    default: "latest"
+    description: "KICS version to use (defaults to latest)"
+  enable_pr_comments:
+    required: false
+    default: false
+    description: "Enable PR comments"
   path:
-    description: 'paths to a file or directories to scan, accepts a comma separated list'
+    description: "paths to a file or directories to scan, accepts a comma separated list"
     required: true
   ignore_on_exit:
-    description: 'defines which non-zero exit codes should be ignored (all, results, errors, none)'
+    description: "defines which non-zero exit codes should be ignored (all, results, errors, none)"
     required: false
   fail_on:
-    description: 'comma separated list of which severities returns exit code !=0'
+    description: "comma separated list of which severities returns exit code !=0"
     required: false
   timeout:
-    description: 'number of seconds the query has to execute before being canceled'
+    description: "number of seconds the query has to execute before being canceled"
     required: false
   profiling:
-    description: 'turns on profiler that prints resource consumption in the logs during the execution (CPU, MEM)'
+    description: "turns on profiler that prints resource consumption in the logs during the execution (CPU, MEM)"
     required: false
   config_path:
-    description: 'path to configuration file'
+    description: "path to configuration file"
     required: false
   platform_type:
-    description: 'case insensitive list of platform types to scan'
+    description: "case insensitive list of platform types to scan"
     required: false
   exclude_paths:
     description: "exclude paths from scan, supports glob, quoted comma separated string example: './shouldNotScan/*,somefile.txt'"
@@ -39,39 +47,44 @@ inputs:
     description: "formats in which the results report will be exported (json, sarif)"
     required: false
   output_path:
-    description: 'file path to store results report (json, sarif)'
+    description: "file path to store results report (json, sarif)"
     required: false
   payload_path:
-    description: 'file path to store source internal representation in JSON format'
+    description: "file path to store source internal representation in JSON format"
     required: false
   queries:
     description: 'path to directory with queries (default "./assets/queries")'
     required: false
+  secrets_regexes_path:
+    description: "path to secrets regex rules configuration file"
+    required: false
+  libraries_path:
+    description: "path to directory with libraries"
+    required: false
+  disable_full_descriptions:
+    description: "disable request for full descriptions and use default vulnerability descriptions"
+    required: false
+  disable_secrets:
+    description: "disable secrets detection"
+    required: false
+  type:
+    description: "case insensitive comma-separated list of platform types to scan (Ansible, AzureResourceManager, CloudFormation, Dockerfile, Kubernetes, OpenAPI, Terraform)"
+    required: false
   verbose:
-    description: 'verbose scan'
+    description: "verbose scan"
+    required: false
+  include_queries:
+    description: "comma separated list of queries ID's to include, cannot be provided with query exclusion flags"
+    required: false
+  bom:
+    description: "include bill of materials (BoM) in results output"
+    required: false
 outputs:
   results:
-    description: 'the result of KICS scan'
+    description: "the result of KICS scan"
 branding:
-  icon: 'shield'
-  color: 'green'
+  icon: "shield"
+  color: "green"
 runs:
-  using: 'docker'
-  image: 'Dockerfile'
-  args:
-    - ${{ inputs.path }}
-    - ${{ inputs.ignore_on_exit }}
-    - ${{ inputs.fail_on }}
-    - ${{ inputs.timeout }}
-    - ${{ inputs.profiling }}
-    - ${{ inputs.config }}
-    - ${{ inputs.platform_type }}
-    - ${{ inputs.exclude_paths }}
-    - ${{ inputs.exclude_queries }}
-    - ${{ inputs.exclude_categories }}
-    - ${{ inputs.exclude_results }}
-    - ${{ inputs.output_formats }}
-    - ${{ inputs.output_path }}
-    - ${{ inputs.payload_path }}
-    - ${{ inputs.queries }}
-    - ${{ inputs.verbose }}
+  using: node12
+  main: dist/index.js
