@@ -19,6 +19,7 @@ jobs:
           verbose: true
           output_path: myoutput/
           output_format: sarif
+          ignore_on_exit: results
           enable_comments: true
       - run: ls -la && ls -la myoutput
         if: always()
