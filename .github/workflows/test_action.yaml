@@ -1,6 +1,7 @@
 name: Test KICS action
 
 on:
+  workflow_dispatch:
   pull_request:
     types: [opened]
 
@@ -12,4 +13,8 @@ jobs:
       - name: Test KICS action
         uses: ./
         with:
-          path: positive.tf
+          path: test/samples/positive1.tf,test/samples/positive2.tf
+          token: ${{ secrets.GITHUB_TOKEN }}
+          timeout: 60
+          verbose: true
+          enable_comments: true

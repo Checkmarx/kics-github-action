@@ -47,7 +47,7 @@ inputs:
     description: "formats in which the results report will be exported (json, sarif)"
     required: false
   output_path:
-    description: "file path to store results report (json, sarif)"
+    description: "directory to store results report"
     required: false
   payload_path:
     description: "file path to store source internal representation in JSON format"

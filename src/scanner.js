@@ -1,11 +1,11 @@
 const exec = require('@actions/exec');
-
 const core = require("@actions/core");
+const filepath = require('path');
 
 const kicsBinary = 'kics';
 
 const kicsInput = {
-    path: { value_type: "string", flag: '--path', value: core.getInput('path') },
+    path: { value_type: "list", flag: '--path', value: core.getInput('path') },
     ignore_on_exit: { value_type: "list", flag: '--ignore-on-exit', value: core.getInput('ignore_on_exit') },
     fail_on: { value_type: "list", flag: '--fail-on', value: core.getInput('fail_on') },
     timeout: { value_type: "int", flag: '--timeout', value: core.getInput('timeout') },
@@ -29,9 +29,11 @@ const kicsInput = {
 };
 
 async function scanWithKICS(enableComments) {
+    let resultsFile;
+
     if (!kicsInput.path.value) {
         core.error('Path to scan is not set');
-        throw new Error('Path to scan is not set');
+        core.setFailed('Path to scan is not set');
     }
     let cmdArgs = [];
     for (let input in kicsInput) {
@@ -42,23 +44,49 @@ async function scanWithKICS(enableComments) {
             }
         } else if (kicsInput[input].value_type === 'list') {
             if (kicsInput[input].value) {
-                cmdArgs.push(kicsInput[input].flag);
-                cmdArgs.push(kicsInput[input].value);
+                if (kicsInput[input].value.indexOf(',') > -1) {
+                    kicsInput[input].value.split(',').forEach(value => {
+                        cmdArgs.push(kicsInput[input].flag);
+                        cmdArgs.push(value);
+                    });
+                } else {
+                    cmdArgs.push(kicsInput[input].flag);
+                    cmdArgs.push(kicsInput[input].value);
+                }
             }
         } else if (kicsInput[input].value_type === 'bool') {
             if (kicsInput[input].value) {
                 cmdArgs.push(kicsInput[input].flag);
             }
+        } else if (kicsInput[input].value_type === 'int') {
+            if (kicsInput[input].value) {
+                cmdArgs.push(kicsInput[input].flag);
+                cmdArgs.push(kicsInput[input].value);
+            }
         }
     }
+
+    // making sure results.json is always created when PR comments are enabled
     if (enableComments) {
         if (!cmdArgs.find(arg => arg == '--output-path')) {
             cmdArgs.push('--output-path');
             cmdArgs.push('./');
+            resultsFile = './results.json';
+        } else {
+            const outputFormats = core.getInput('output_formats');
+            if (!outputFormats.toLowerCase().indexOf('json')) {
+                cmdArgs.push('--output-formats');
+                cmdArgs.push('json');
+            }
+            let resultsDir = core.getInput('output_path');
+            resultsFile = filepath.join(resultsDir, '/results.json');
         }
     }
-
-    return await exec.exec(`${kicsBinary} scan --no-progress ${cmdArgs.join(" ")}`)
+    exitCode = await exec.exec(`${kicsBinary} scan --no-progress ${cmdArgs.join(" ")}`, [], { ignoreReturnCode: true });
+    return {
+        statusCode: exitCode,
+        resultsFile: resultsFile
+    };
 }
 
 module.exports = {

@@ -17804,7 +17804,6 @@ function wrappy (fn, cb) {
 /***/ 3571:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
-const fs = __nccwpck_require__(5747);
 const moment = __nccwpck_require__(9623)
 
 const kicsLogo = "https://user-images.githubusercontent.com/75368139/136991766-a4e5bc8b-63db-48f7-9384-740e9f15c9f6.png"
@@ -17815,13 +17814,6 @@ const severityIcons = {
     "LOW": "https://user-images.githubusercontent.com/23239410/92157091-98598300-ee32-11ea-8498-19bd7d62019b.png",
     "INFO": "https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png",
     "TRACE": "https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png"
-}
-
-
-function readJSON(filename) {
-    const rawdata = fs.readFileSync(filename);
-    const parsedJSON = JSON.parse(rawdata.toString());
-    return parsedJSON;
 }
 
 function createComment(results) {
@@ -17855,12 +17847,8 @@ function createComment(results) {
     return message;
 }
 
-async function postPRComment(repo, prNumber) {
-    const githubToken = core.getInput("token");
-    const octokit = github.getOctokit(githubToken);
-    const results = readJSON("results.json");
+async function postPRComment(results, repo, prNumber, octokit) {
     const message = createComment(results);
-    console.log(message);
 
     const { data: comments } = await octokit.rest.issues.listComments({
         ...repo,
@@ -17892,6 +17880,7 @@ async function postPRComment(repo, prNumber) {
 module.exports = {
     postPRComment
 };
+
 
 /***/ }),
 
@@ -17992,19 +17981,20 @@ module.exports = {
     installKICS
 }
 
+
 /***/ }),
 
 /***/ 3157:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
 const exec = __nccwpck_require__(1514);
-
 const core = __nccwpck_require__(2186);
+const filepath = __nccwpck_require__(5622);
 
 const kicsBinary = 'kics';
 
 const kicsInput = {
-    path: { value_type: "string", flag: '--path', value: core.getInput('path') },
+    path: { value_type: "list", flag: '--path', value: core.getInput('path') },
     ignore_on_exit: { value_type: "list", flag: '--ignore-on-exit', value: core.getInput('ignore_on_exit') },
     fail_on: { value_type: "list", flag: '--fail-on', value: core.getInput('fail_on') },
     timeout: { value_type: "int", flag: '--timeout', value: core.getInput('timeout') },
@@ -18028,9 +18018,11 @@ const kicsInput = {
 };
 
 async function scanWithKICS(enableComments) {
+    let resultsFile;
+
     if (!kicsInput.path.value) {
         core.error('Path to scan is not set');
-        throw new Error('Path to scan is not set');
+        core.setFailed('Path to scan is not set');
     }
     let cmdArgs = [];
     for (let input in kicsInput) {
@@ -18041,28 +18033,55 @@ async function scanWithKICS(enableComments) {
             }
         } else if (kicsInput[input].value_type === 'list') {
             if (kicsInput[input].value) {
-                cmdArgs.push(kicsInput[input].flag);
-                cmdArgs.push(kicsInput[input].value);
+                if (kicsInput[input].value.indexOf(',') > -1) {
+                    kicsInput[input].value.split(',').forEach(value => {
+                        cmdArgs.push(kicsInput[input].flag);
+                        cmdArgs.push(value);
+                    });
+                } else {
+                    cmdArgs.push(kicsInput[input].flag);
+                    cmdArgs.push(kicsInput[input].value);
+                }
             }
         } else if (kicsInput[input].value_type === 'bool') {
             if (kicsInput[input].value) {
                 cmdArgs.push(kicsInput[input].flag);
             }
+        } else if (kicsInput[input].value_type === 'int') {
+            if (kicsInput[input].value) {
+                cmdArgs.push(kicsInput[input].flag);
+                cmdArgs.push(kicsInput[input].value);
+            }
         }
     }
+
+    // making sure results.json is always created when PR comments are enabled
     if (enableComments) {
         if (!cmdArgs.find(arg => arg == '--output-path')) {
             cmdArgs.push('--output-path');
             cmdArgs.push('./');
+            resultsFile = './results.json';
+        } else {
+            const outputFormats = core.getInput('output_formats');
+            if (!outputFormats.toLowerCase().indexOf('json')) {
+                cmdArgs.push('--output-formats');
+                cmdArgs.push('json');
+            }
+            let resultsDir = core.getInput('output_path');
+            resultsFile = filepath.join(resultsDir, '/results.json');
         }
     }
-
-    return await exec.exec(`${kicsBinary} scan --no-progress ${cmdArgs.join(" ")}`)
+    exitCode = await exec.exec(`${kicsBinary} scan --no-progress ${cmdArgs.join(" ")}`, [], { ignoreReturnCode: true });
+    return {
+        statusCode: exitCode,
+        resultsFile: resultsFile
+    };
 }
 
 module.exports = {
     scanWithKICS
 };
+
 
 /***/ }),
 
@@ -18282,27 +18301,99 @@ var __webpack_exports__ = {};
 const install = __nccwpck_require__(1430);
 const commenter = __nccwpck_require__(3571);
 const scanner = __nccwpck_require__(3157);
+
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
+
+const fs = __nccwpck_require__(5747);
 
 const actionInputs = {
     kics_version: { value: core.getInput('kics_version') },
     enable_comments: { value: core.getInput('enable_comments') },
 }
 
+const exitStatus = {
+    results: {
+        codes: {
+            HIGH: 50,
+            MEDIUM: 40,
+            LOW: 30,
+            INFO: 20,
+        },
+        isResultExitStatus: function (exitCode) {
+            for (const key in this.codes) {
+                if (this.codes[key] === exitCode) {
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+}
+
+function setWorkflowStatus(statusCode) {
+    console.log(`KICS scan status code: ${statusCode}`);
+
+    const ignoreOnExit = core.getInput('ignore_on_exit');
+
+    if (ignoreOnExit.toLowerCase() === 'all') {
+        console.log(`ignore_on_exit=all :: Ignoring exit code ${statusCode}`);
+        return;
+    }
+
+    if (ignoreOnExit.toLowerCase() === 'results') {
+        if (exitStatus.results.isResultExitStatus(statusCode)) {
+            console.log(`ignore_on_exit=results :: Ignoring exit code ${statusCode}`);
+            return;
+        }
+    }
+    if (ignoreOnExit.toLowerCase() === 'errors') {
+        if (!exitStatus.results.isResultExitStatus(statusCode)) {
+            console.log(`ignore_on_exit=errors :: Ignoring exit code ${statusCode}`);
+            return;
+        }
+    }
+
+    core.setFailed(`KICS scan failed with exit code ${statusCode}`);
+}
+
+function readJSON(filename) {
+    console.log(`Reading JSON file: ${filename}`);
+    const rawdata = fs.readFileSync(filename);
+    const parsedJSON = JSON.parse(rawdata.toString());
+    console.log(`Parsed JSON: ${JSON.stringify(parsedJSON)}`);
+    return parsedJSON;
+}
+
 async function main() {
     console.log("Running KICS action...");
     try {
+        const githubToken = core.getInput("token");
+        const octokit = github.getOctokit(githubToken);
         let enableComments = actionInputs.enable_comments.value.toLocaleLowerCase() === "true";
-        const context = github.context;
-        const repository = context.repo;
-        console.log(context);
-        const pullRequestNumber = context.payload.pull_request.number;
-        await install.installKICS();
-        await scanner.scanWithKICS(enableComments);
-        if (enableComments) {
-            await commenter.commentOnPullRequest(repository, pullRequestNumber);
+        let context = {};
+        let repo = '';
+        let prNumber = '';
+
+        if (github.context) {
+            context = github.context;
+            if (context.repo) {
+                repo = context.repo;
+            }
+            if (context.payload && context.payload.pull_request) {
+                prNumber = context.payload.pull_request.number;
+            }
         }
+
+        await install.installKICS();
+        const scanResults = await scanner.scanWithKICS(enableComments);
+        if (enableComments) {
+            console.log(scanResults);
+            let parsedResults = readJSON(scanResults.resultsFile);
+            await commenter.postPRComment(parsedResults, repo, prNumber, octokit);
+        }
+
+        setWorkflowStatus(results.statusCode);
     } catch (e) {
         console.error(e);
         core.setFailed(e.message);
@@ -18310,6 +18401,7 @@ async function main() {
 }
 
 main();
+
 })();
 
 module.exports = __webpack_exports__;
