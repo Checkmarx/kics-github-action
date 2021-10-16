@@ -3,13 +3,13 @@ name: Test KICS action
 on:
   workflow_dispatch:
   pull_request:
-    types: [opened]
 
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+      - run: mkdir -p myoutput
       - name: Test KICS action
         uses: ./
         with:
@@ -17,4 +17,8 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           timeout: 60
           verbose: true
+          output_path: myoutput/
+          output_format: sarif
           enable_comments: true
+      - run: ls -la && ls -la myoutput
+        if: always()
