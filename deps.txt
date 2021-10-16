@@ -1,3 +1,0 @@
-     "@fohlen/github-release-downloader": "^1.0.0",
-     "decompress": "^4.2.1",
-     "decompress-targz": "^4.1.1",

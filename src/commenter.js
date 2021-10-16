@@ -1,4 +1,3 @@
-const fs = require("fs");
 const moment = require('moment')
 
 const kicsLogo = "https://user-images.githubusercontent.com/75368139/136991766-a4e5bc8b-63db-48f7-9384-740e9f15c9f6.png"
@@ -9,13 +8,6 @@ const severityIcons = {
     "LOW": "https://user-images.githubusercontent.com/23239410/92157091-98598300-ee32-11ea-8498-19bd7d62019b.png",
     "INFO": "https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png",
     "TRACE": "https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png"
-}
-
-
-function readJSON(filename) {
-    const rawdata = fs.readFileSync(filename);
-    const parsedJSON = JSON.parse(rawdata.toString());
-    return parsedJSON;
 }
 
 function createComment(results) {
@@ -49,12 +41,8 @@ function createComment(results) {
     return message;
 }
 
-async function postPRComment(repo, prNumber) {
-    const githubToken = core.getInput("token");
-    const octokit = github.getOctokit(githubToken);
-    const results = readJSON("results.json");
+async function postPRComment(results, repo, prNumber, octokit) {
     const message = createComment(results);
-    console.log(message);
 
     const { data: comments } = await octokit.rest.issues.listComments({
         ...repo,
