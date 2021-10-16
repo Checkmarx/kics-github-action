@@ -74,8 +74,8 @@ async function scanWithKICS(enableComments) {
             resultsFile = './results.json';
         } else {
             const outputFormats = core.getInput('output_formats');
-            if (!outputFormats.toLowerCase().indexOf('json')) {
-                cmdArgs.push('--output-formats');
+            if (outputFormats.toLowerCase().indexOf('json') == -1) {
+                cmdArgs.push('--report-formats');
                 cmdArgs.push('json');
             }
             let resultsDir = core.getInput('output_path');

@@ -34,6 +34,10 @@ const exitStatus = {
 function setWorkflowStatus(statusCode) {
     console.log(`KICS scan status code: ${statusCode}`);
 
+    if (statusCode === 0) {
+        return;
+    }
+
     const ignoreOnExit = core.getInput('ignore_on_exit');
 
     if (ignoreOnExit.toLowerCase() === 'all') {

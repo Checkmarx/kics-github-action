@@ -18063,8 +18063,8 @@ async function scanWithKICS(enableComments) {
             resultsFile = './results.json';
         } else {
             const outputFormats = core.getInput('output_formats');
-            if (!outputFormats.toLowerCase().indexOf('json')) {
-                cmdArgs.push('--output-formats');
+            if (outputFormats.toLowerCase().indexOf('json') == -1) {
+                cmdArgs.push('--report-formats');
                 cmdArgs.push('json');
             }
             let resultsDir = core.getInput('output_path');
@@ -18333,6 +18333,10 @@ const exitStatus = {
 
 function setWorkflowStatus(statusCode) {
     console.log(`KICS scan status code: ${statusCode}`);
+
+    if (statusCode === 0) {
+        return;
+    }
 
     const ignoreOnExit = core.getInput('ignore_on_exit');
 
