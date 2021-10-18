@@ -17873,21 +17873,21 @@ function createComment(results) {
     let severityCounters = results['severity_counters']
     for (let severity of severityOrder) {
         if (severity in severityCounters) {
-            message += "| ![" + severity + "](" + severityIcons[severity] + ") |" + severity.toUpperCase() + " | " + severityCounters[severity.toUpperCase()] + " |\n";
+            message += `| ![${severity}](${severityIcons[severity]}) | ${severity.toUpperCase()} | ${severityCounters[severity.toUpperCase()]} |\n`;
         }
     }
-    message += `| ![TOTAL](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | TOTAL | ${results['total_counter']} |`;
+    message += `| ![TOTAL](${severityIcons['TRACE']}) | TOTAL | ${results['total_counter']} |`;
 
     message += "\n\n</td><td>\n\n";
 
-    message += "| Metric | Values |\n";
-    message += "| --- | --- |\n";
-    message += "| Files scanned | " + results['files_scanned'] + "\n";
-    message += "| Files parsed | " + results['files_parsed'] + "\n";
-    message += "| Files failed to scan | " + results['files_failed_to_scan'] + "\n";
-    message += "| Total queries | " + results['queries_total'] + "\n";
-    message += "| Queries failed to execute | " + results['queries_failed_to_execute'] + "\n";
-    message += "| Execution time | " + moment(results['end']).diff(moment(results['start']), 'seconds') + "s\n";
+    message += "| | Metric | Values |\n";
+    message += "| --- | --- | --- |\n";
+    message += `| ![placeholder](${severityIcons['TRACE']}) | Files scanned | ${results['files_scanned']}\n`;
+    message += `| ![placeholder](${severityIcons['TRACE']}) | Files parsed | ${results['files_parsed']}\n`;
+    message += `| ![placeholder](${severityIcons['TRACE']}) | Files failed to scan | ${results['files_failed_to_scan']}\n`;
+    message += `| ![placeholder](${severityIcons['TRACE']}) | Total queries | ${results['queries_total']}\n`;
+    message += `| ![placeholder](${severityIcons['TRACE']}) | Queries failed to execute | ${results['queries_failed_to_execute']}\n`;
+    message += `| ![placeholder](${severityIcons['TRACE']}) | Execution time | ${moment(results['end']).diff(moment(results['start']), 'seconds')}\n`;
 
     message += "\n</td></tr>\n</table>\n\n";
 
