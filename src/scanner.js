@@ -68,7 +68,7 @@ function addKICSCmdArgs(cmdArgs) {
     }
 }
 
-async function scanWithKICS(enableComments) {
+async function scanWithKICS() {
     let resultsJSONFile;
 
     if (!kicsInput.path.value) {
@@ -78,18 +78,17 @@ async function scanWithKICS(enableComments) {
     let cmdArgs = [];
     addKICSCmdArgs(cmdArgs);
 
-    // making sure results.json is always created when PR comments are enabled
-    if (enableComments) {
-        if (!cmdArgs.find(arg => arg == '--output-path')) {
-            cmdArgs.push('--output-path');
-            cmdArgs.push('./');
-            resultsJSONFile = './results.json';
-        } else {
-            let resultsDir = core.getInput('output_path');
-            resultsJSONFile = filepath.join(resultsDir, '/results.json');
-        }
-        addJSONReportFormat(cmdArgs);
+    // making sure results.json is always created
+    if (!cmdArgs.find(arg => arg == '--output-path')) {
+        cmdArgs.push('--output-path');
+        cmdArgs.push('./');
+        resultsJSONFile = './results.json';
+    } else {
+        let resultsDir = core.getInput('output_path');
+        resultsJSONFile = filepath.join(resultsDir, '/results.json');
     }
+    addJSONReportFormat(cmdArgs);
+
     exitCode = await exec.exec(`${kicsBinary} scan --no-progress ${cmdArgs.join(" ")}`, [], { ignoreReturnCode: true });
     return {
         statusCode: exitCode,

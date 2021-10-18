@@ -17801,6 +17801,50 @@ function wrappy (fn, cb) {
 
 /***/ }),
 
+/***/ 9362:
+/***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
+
+const core = __nccwpck_require__(2186);
+
+function extractAnnotations(results) {
+    let annotations = [];
+    for (i in results.queries) {
+        let query = results.queries[i];
+        for (j in query.files) {
+            let file = query.files[j];
+            annotations.push({
+                file: file['file_name'],
+                startLine: file['line'],
+                endLine: file['line'],
+                severity: query['severity'],
+                queryName: query['query_name'],
+                description: query['description'],
+            });
+        }
+    }
+
+    return annotations;
+}
+
+function annotateChangesWithResults(results) {
+    const annotations = extractAnnotations(results);
+    annotations.forEach(annotation => {
+        core.warning(annotation.description, {
+            title: `[${annotation.severity}] ${annotation.queryName}`,
+            startLine: annotation.startLine,
+            endLine: annotation.endLine,
+            file: annotation.file,
+        });
+    });
+
+}
+
+module.exports = {
+    annotateChangesWithResults
+}
+
+/***/ }),
+
 /***/ 3571:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -18060,7 +18104,7 @@ function addKICSCmdArgs(cmdArgs) {
     }
 }
 
-async function scanWithKICS(enableComments) {
+async function scanWithKICS() {
     let resultsJSONFile;
 
     if (!kicsInput.path.value) {
@@ -18070,18 +18114,17 @@ async function scanWithKICS(enableComments) {
     let cmdArgs = [];
     addKICSCmdArgs(cmdArgs);
 
-    // making sure results.json is always created when PR comments are enabled
-    if (enableComments) {
-        if (!cmdArgs.find(arg => arg == '--output-path')) {
-            cmdArgs.push('--output-path');
-            cmdArgs.push('./');
-            resultsJSONFile = './results.json';
-        } else {
-            let resultsDir = core.getInput('output_path');
-            resultsJSONFile = filepath.join(resultsDir, '/results.json');
-        }
-        addJSONReportFormat(cmdArgs);
+    // making sure results.json is always created
+    if (!cmdArgs.find(arg => arg == '--output-path')) {
+        cmdArgs.push('--output-path');
+        cmdArgs.push('./');
+        resultsJSONFile = './results.json';
+    } else {
+        let resultsDir = core.getInput('output_path');
+        resultsJSONFile = filepath.join(resultsDir, '/results.json');
     }
+    addJSONReportFormat(cmdArgs);
+
     exitCode = await exec.exec(`${kicsBinary} scan --no-progress ${cmdArgs.join(" ")}`, [], { ignoreReturnCode: true });
     return {
         statusCode: exitCode,
@@ -18311,6 +18354,7 @@ var __webpack_exports__ = {};
 const install = __nccwpck_require__(1430);
 const commenter = __nccwpck_require__(3571);
 const scanner = __nccwpck_require__(3157);
+const annotator = __nccwpck_require__(9362);
 
 const core = __nccwpck_require__(2186);
 const github = __nccwpck_require__(5438);
@@ -18385,7 +18429,6 @@ async function main() {
     try {
         const githubToken = core.getInput("token");
         const octokit = github.getOctokit(githubToken);
-        let enableComments = core.getInput('enable_comments').toLocaleLowerCase() === "true";
         let context = {};
         let repo = '';
         let prNumber = '';
@@ -18401,11 +18444,13 @@ async function main() {
         }
 
         await install.installKICS();
-        const scanResults = await scanner.scanWithKICS(enableComments);
-        if (enableComments) {
-            let parsedResults = readJSON(scanResults.resultsJSONFile);
+        const scanResults = await scanner.scanWithKICS();
+        const parsedResults = readJSON(scanResults.resultsJSONFile);
+        if (core.getInput('enable_comments').toLocaleLowerCase() === "true") {
             await commenter.postPRComment(parsedResults, repo, prNumber, octokit);
         }
+
+        annotator.annotateChangesWithResults(parsedResults);
 
         cleanupOutput(scanResults.resultsJSONFile);
         setWorkflowStatus(scanResults.statusCode);

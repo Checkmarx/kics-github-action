@@ -1,6 +1,7 @@
 const install = require("./install");
 const commenter = require("./commenter");
 const scanner = require("./scanner");
+const annotator = require("./annotator");
 
 const core = require("@actions/core");
 const github = require("@actions/github");
@@ -75,7 +76,6 @@ async function main() {
     try {
         const githubToken = core.getInput("token");
         const octokit = github.getOctokit(githubToken);
-        let enableComments = core.getInput('enable_comments').toLocaleLowerCase() === "true";
         let context = {};
         let repo = '';
         let prNumber = '';
@@ -91,11 +91,13 @@ async function main() {
         }
 
         await install.installKICS();
-        const scanResults = await scanner.scanWithKICS(enableComments);
-        if (enableComments) {
-            let parsedResults = readJSON(scanResults.resultsJSONFile);
+        const scanResults = await scanner.scanWithKICS();
+        const parsedResults = readJSON(scanResults.resultsJSONFile);
+        if (core.getInput('enable_comments').toLocaleLowerCase() === "true") {
             await commenter.postPRComment(parsedResults, repo, prNumber, octokit);
         }
+
+        annotator.annotateChangesWithResults(parsedResults);
 
         cleanupOutput(scanResults.resultsJSONFile);
         setWorkflowStatus(scanResults.statusCode);
