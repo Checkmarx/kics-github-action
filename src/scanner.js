@@ -28,14 +28,15 @@ const kicsInput = {
     bom: { value_type: "bool", flag: '--bom', value: core.getInput('bom') },
 };
 
-async function scanWithKICS(enableComments) {
-    let resultsFile;
-
-    if (!kicsInput.path.value) {
-        core.error('Path to scan is not set');
-        core.setFailed('Path to scan is not set');
+function addJSONReportFormat(cmdArgs) {
+    const outputFormats = core.getInput('output_formats');
+    if (outputFormats.toLowerCase().indexOf('json') == -1) {
+        cmdArgs.push('--report-formats');
+        cmdArgs.push('json');
     }
-    let cmdArgs = [];
+}
+
+function addKICSCmdArgs(cmdArgs) {
     for (let input in kicsInput) {
         if (kicsInput[input].value_type === 'string') {
             if (kicsInput[input].value) {
@@ -65,27 +66,34 @@ async function scanWithKICS(enableComments) {
             }
         }
     }
+}
+
+async function scanWithKICS(enableComments) {
+    let resultsJSONFile;
+
+    if (!kicsInput.path.value) {
+        core.error('Path to scan is not set');
+        core.setFailed('Path to scan is not set');
+    }
+    let cmdArgs = [];
+    addKICSCmdArgs(cmdArgs);
 
     // making sure results.json is always created when PR comments are enabled
     if (enableComments) {
         if (!cmdArgs.find(arg => arg == '--output-path')) {
             cmdArgs.push('--output-path');
             cmdArgs.push('./');
-            resultsFile = './results.json';
+            resultsJSONFile = './results.json';
         } else {
-            const outputFormats = core.getInput('output_formats');
-            if (outputFormats.toLowerCase().indexOf('json') == -1) {
-                cmdArgs.push('--report-formats');
-                cmdArgs.push('json');
-            }
             let resultsDir = core.getInput('output_path');
-            resultsFile = filepath.join(resultsDir, '/results.json');
+            resultsJSONFile = filepath.join(resultsDir, '/results.json');
         }
+        addJSONReportFormat(cmdArgs);
     }
     exitCode = await exec.exec(`${kicsBinary} scan --no-progress ${cmdArgs.join(" ")}`, [], { ignoreReturnCode: true });
     return {
         statusCode: exitCode,
-        resultsFile: resultsFile
+        resultsJSONFile: resultsJSONFile
     };
 }
 

@@ -4,13 +4,9 @@ const scanner = require("./scanner");
 
 const core = require("@actions/core");
 const github = require("@actions/github");
+const io = require("@actions/io");
 
 const fs = require("fs");
-
-const actionInputs = {
-    kics_version: { value: core.getInput('kics_version') },
-    enable_comments: { value: core.getInput('enable_comments') },
-}
 
 const exitStatus = {
     results: {
@@ -67,12 +63,19 @@ function readJSON(filename) {
     return parsedJSON;
 }
 
+function cleanupOutput(resultsJSONFile) {
+    const outputFormats = core.getInput('output_formats');
+    if (!outputFormats.toLowerCase().includes('json') || core.getInput('output_path') === '') {
+        io.rmRF(resultsJSONFile);
+    }
+}
+
 async function main() {
     console.log("Running KICS action...");
     try {
         const githubToken = core.getInput("token");
         const octokit = github.getOctokit(githubToken);
-        let enableComments = actionInputs.enable_comments.value.toLocaleLowerCase() === "true";
+        let enableComments = core.getInput('enable_comments').toLocaleLowerCase() === "true";
         let context = {};
         let repo = '';
         let prNumber = '';
@@ -90,10 +93,11 @@ async function main() {
         await install.installKICS();
         const scanResults = await scanner.scanWithKICS(enableComments);
         if (enableComments) {
-            let parsedResults = readJSON(scanResults.resultsFile);
+            let parsedResults = readJSON(scanResults.resultsJSONFile);
             await commenter.postPRComment(parsedResults, repo, prNumber, octokit);
         }
 
+        cleanupOutput(scanResults.resultsJSONFile);
         setWorkflowStatus(scanResults.statusCode);
     } catch (e) {
         console.error(e);

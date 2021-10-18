@@ -2,10 +2,9 @@
 name: "KICS Github Action"
 description: "Run KICS scan against IaC projects"
 inputs:
-  kics_version:
-    required: false
-    default: "latest"
-    description: "KICS version to use (defaults to latest)"
+  token:
+    required: true
+    description: "Github token"
   enable_comments:
     required: false
     default: false
