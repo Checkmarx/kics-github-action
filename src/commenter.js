@@ -16,7 +16,7 @@ function createComment(results) {
 
     message += "<table>\n";
     message += "<tr></tr>\n";
-    message += "<tr><td>\n";
+    message += "<tr><td>\n\n";
 
     message += "| | Category | Results |\n";
     message += "| --- |--- | --- |\n";
@@ -28,7 +28,7 @@ function createComment(results) {
     }
     message += `| ![TOTAL](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | TOTAL | ${results['total_counter']} |`;
 
-    message += "\n</td><td>\n";
+    message += "\n\n</td><td>\n\n";
 
     message += "| Metric | Values |\n";
     message += "| --- | --- |\n";
@@ -39,7 +39,7 @@ function createComment(results) {
     message += "| Queries failed to execute | " + results['queries_failed_to_execute'] + "\n";
     message += "| Execution time | " + moment(results['end']).diff(moment(results['start']), 'seconds') + "s\n";
 
-    message += "\n</td></tr>\n</table>\n";
+    message += "\n</td></tr>\n</table>\n\n";
 
     return message;
 }
@@ -55,7 +55,7 @@ async function postPRComment(results, repo, prNumber, octokit) {
     const comment = comments.find((comment) => {
         return (
             comment.user.login === "github-actions[bot]" &&
-            comment.body.startsWith("![kics-logo](" + kicsLogo + ")\n")
+            comment.body.startsWith("![kics-logo](")
         );
     });
 
