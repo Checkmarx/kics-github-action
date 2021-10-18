@@ -282,14 +282,14 @@ jobs:
 
 </td><td>
 
-| Metric | Values |
-| --- | --- |
-| Files scanned | 2 |
-| Files parsed | 2 |
-| Files failed to scan | 0 |
-| Total queries | 821 |
-| Queries failed to execute | 0 |
-| Execution time | 13s |
+| | Metric | Values |
+| --- | --- | --- |
+| ![placeholder](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | Files scanned | 2 |
+| ![placeholder](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | Files parsed | 2 |
+| ![placeholder](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | Files failed to scan | 0 |
+| ![placeholder](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | Total queries | 821 |
+| ![placeholder](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | Queries failed to execute | 0 |
+| ![placeholder](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | Execution time | 13s |
 
 </td></tr> </table>
 
