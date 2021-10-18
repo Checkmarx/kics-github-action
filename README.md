@@ -32,22 +32,31 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 
 | Variable           | Example Value &nbsp;                    | Description &nbsp;                                               | Type    | Required | Default                                       |
 | ------------------ | --------------------------------------- | ---------------------------------------------------------------- | ------- | -------- | --------------------------------------------- |
+| enable_comment     | true                                    | Enable pull request report comments                              | Boolean | No       | false                                         |
 | path               | terraform/main.tf,Dockerfile            | paths to a file or directories to scan, comma separated list     | String  | Yes      | N/A                                           |
-| ignore_on_exit     | results                                 | defines which non-zero exit codes should be ignored (all, results, errors, none) | String  | No       | none                  |
+| ignore_on_exit     | results                                 | defines which non-zero exit codes should be ignored (all, results, errors, none) | String  | No       | none                          |
 | fail_on            | high,medium                             | comma separated list of which severities returns exit code !=0   | String  | No       | high,medium,low,info                          |
 | timeout            | 75                                      | number of seconds the query has to execute before being canceled | String  | No       | 60                                            |
-| profiling          | CPU                                     | turns on profiler that prints resource consumption in the logs during the execution (CPU, MEM) | String  | No   | N/A |
+| profiling          | CPU                                     | turns on profiler that prints resource consumption in the logs during the execution (CPU, MEM) | String  | No   | N/A                 |
 | config_path        | ./kics.config                           | path to configuration file                                       | String  | No       | N/A                                           |
 | platform_type      | terraform,ansible                       | case insensitive list of platform types to scan                  | String  | No       | All platforms                                 |
 | exclude_paths      | ./shouldNotScan/*,somefile.txt          | exclude paths from scan, supports glob, comma separated list     | String  | No       | N/A                                           |
 | exclude_queries    | a227ec01-f97a-4084-91a4-47b350c1db54    | exclude queries by providing the query ID, comma separated list  | String  | No       | N/A                                           |
 | exclude_categories | 'Observability,Networking and Firewall' | exclude categories by providing its name, comma separated list   | String  | No       | N/A                                           |
 | exclude_results    | 'd4a1fa80-d9d8-450f-87c2-e1f6669c41f8'  | exclude results by providing the similarity ID of a result       | String  | No       | N/A                                           |
+| include_queries    | a227ec01-f97a-4084-91a4-47b350c1db54    | include only specified list of queries to the scan, cannot be provided with query exclusion flags | String | No | N/A                 |
 | output_formats     | 'json,sarif'                            | formats in which the results report will be exported             | String  | No       | json                                          |
 | output_path        | results.json                            | file path to store result in json format                         | String  | No       | N/A                                           |
 | payload_path       | /tmp/mypayload.json                     | file path to store source internal representation in JSON format | String  | No       | N/A                                           |
 | queries            |                                         | path to directory with queries (default "./assets/queries")      | String  | No       | ./assets/queries downloaded with the binaries |
 | verbose            | true                                    | verbose scan                                                     | Boolean | No       | false                                         |
+| type               | Ansible,Dockerfile                      | case insensitive comma-separated list of platform types to scan (Ansible, AzureResourceManager, CloudFormation, Dockerfile, Kubernetes, OpenAPI, Terraform) | String | No | all types |
+| bom                | true                                    | include bill of materials (BoM) in results.json output           | Boolean | No       | false                                         |
+| disable_full_descriptions | false                            | disable request for full descriptions and use default vulnerability descriptions | Boolean | false                                    |
+| disable_secrets    | false                                   | disable secrets detection | Boolean | false |
+| secrets_regexes_path| ./mydir/secrets-config.json            | path to custom secrets regex rules configuration file | String | No | N/A |
+| libraries_path | ./myLibsDir | path to directory with Rego libraries | String | No | N/A |
+
 
 ## Simple usage example
 
@@ -58,7 +67,7 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
     - uses: actions/checkout@v2
     # Scan Iac with kics
     - name: run kics Scan
-      uses: checkmarx/kics-action@v1.2
+      uses: checkmarx/kics-action@v1.3
       with:
         # scanning two directories: ./terraform/ ./cfn-templates/ plus a single file
         path: 'terraform,cfn-templates,my-other-sub-folder/Dockerfile'
@@ -81,7 +90,7 @@ If want your pipeline just to fail on HIGH and MEDIUM severity results and KICS 
     steps:
     - uses: actions/checkout@v2
     - name: run kics Scan
-      uses: checkmarx/kics-action@v1.2
+      uses: checkmarx/kics-action@v1.3
       with:
         path: 'terraform,my-other-sub-folder/Dockerfile'
         fail_on: high,medium
@@ -99,7 +108,7 @@ If you want KICS to ignore the results and return exit status code 0 unless a KI
     steps:
     - uses: actions/checkout@v2
     - name: run kics Scan
-      uses: checkmarx/kics-action@v1.2
+      uses: checkmarx/kics-action@v1.3
       with:
         path: 'terraform'
         ignore_on_exit: results
@@ -120,7 +129,7 @@ You can only enable one profiler at a time, CPU or MEM.
     steps:
     - uses: actions/checkout@v2
     - name: run kics Scan
-      uses: checkmarx/kics-action@v1.2
+      uses: checkmarx/kics-action@v1.3
       with:
         path: 'terraform'
         profiling: MEM
@@ -151,7 +160,7 @@ jobs:
         # make sure results dir is created
         run: mkdir -p results-dir
       - name: Run KICS Scan with SARIF result
-        uses: checkmarx/kics-action@v1.2
+        uses: checkmarx/kics-action@v1.3
         with:
           path: 'terraform'
           # when provided with a directory on output_path
@@ -225,6 +234,64 @@ jobs:
         with:
           sarif_file: results-dir/results.sarif
 ```
+
+## Enabling Pull Request Comment
+
+`GITHUB_TOKEN` enables this github action to access github API and post comments in a pull request:
+
+```yaml
+name: Test KICS action PR comment
+
+on:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: run kics Scan
+      uses: checkmarx/kics-action@v1.3
+        with:
+          path: test/samples/positive1.tf,test/samples/positive2.tf
+          token: ${{ secrets.GITHUB_TOKEN }}
+          output_path: myResults/
+          ignore_on_exit: results
+          enable_comments: true
+```
+
+### Example Pull Request Comment
+
+
+<img alt="KICS Logo" src="https://user-images.githubusercontent.com/75368139/136991766-a4e5bc8b-63db-48f7-9384-740e9f15c9f6.png" width="150">
+
+**KICS version: 1.4.5**
+
+<table>
+<tr></tr>
+<tr><td>
+
+| | Category | Results |
+| --- |--- | --- |
+| ![HIGH](https://user-images.githubusercontent.com/23239410/92157087-97285600-ee32-11ea-988f-0aca12c4c126.png) |HIGH | 3 |
+| ![MEDIUM](https://user-images.githubusercontent.com/23239410/92157093-98598300-ee32-11ea-83d7-af52251a011b.png) |MEDIUM | 2 |
+| ![LOW](https://user-images.githubusercontent.com/23239410/92157091-98598300-ee32-11ea-8498-19bd7d62019b.png) |LOW | 0 |
+| ![INFO](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) |INFO | 0 |
+| ![TRACE](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) |TRACE | 0 |
+| ![TOTAL](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | TOTAL | 5 |
+
+</td><td>
+
+| Metric | Values |
+| --- | --- |
+| Files scanned | 2 |
+| Files parsed | 2 |
+| Files failed to scan | 0 |
+| Total queries | 821 |
+| Queries failed to execute | 0 |
+| Execution time | 13s |
+
+</td></tr> </table>
 
 ## How To Contribute
 

@@ -13,9 +13,11 @@ const severityIcons = {
 function createComment(results) {
     let message = "![kics-logo](" + kicsLogo + ")\n";
 
-    message += "---";
+    message += "<table>";
+    message += "<tr></tr>";
+    message += "<tr><td>";
+
     message += `\n**KICS version: ${results['kics_version']}**\n`
-    message += "\n**Total Results: " + results['total_counter'] + "**\n\n";
     message += "| | Category | Results |\n";
     message += "| --- |--- | --- |\n";
     let severityCounters = results['severity_counters']
@@ -24,8 +26,9 @@ function createComment(results) {
             message += "| ![" + severity + "](" + severityIcons[severity] + ") |" + severity.toUpperCase() + " | " + severityCounters[severity.toUpperCase()] + " |\n";
         }
     }
+    message += `| ![TOTAL](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | TOTAL | ${results['total_counter']} |`;
+    message += "</td><td>";
 
-    message += "\n**Scan Metrics**\n\n";
     message += "| Metric | Values |\n";
     message += "| --- | --- |\n";
     message += "| Files scanned | " + results['files_scanned'] + "\n";
@@ -33,10 +36,8 @@ function createComment(results) {
     message += "| Files failed to scan | " + results['files_failed_to_scan'] + "\n";
     message += "| Total queries | " + results['queries_total'] + "\n";
     message += "| Queries failed to execute | " + results['queries_failed_to_execute'] + "\n";
-
-    let executionTime = moment(results['end']).diff(moment(results['start']), 'seconds');
-
-    message += "| Execution time | " + executionTime + "s\n";
+    message += "| Execution time | " + moment(results['end']).diff(moment(results['start']), 'seconds') + "s\n";
+    message += "</td></tr></table>";
 
     return message;
 }
