@@ -17818,12 +17818,12 @@ const severityIcons = {
 
 function createComment(results) {
     let message = "![kics-logo](" + kicsLogo + ")\n";
-
-    message += "<table>";
-    message += "<tr></tr>";
-    message += "<tr><td>";
-
     message += `\n**KICS version: ${results['kics_version']}**\n`
+
+    message += "<table>\n";
+    message += "<tr></tr>\n";
+    message += "<tr><td>\n";
+
     message += "| | Category | Results |\n";
     message += "| --- |--- | --- |\n";
     let severityCounters = results['severity_counters']
@@ -17833,7 +17833,8 @@ function createComment(results) {
         }
     }
     message += `| ![TOTAL](https://user-images.githubusercontent.com/23239410/92157090-97c0ec80-ee32-11ea-9b2e-aa6b32b03d54.png) | TOTAL | ${results['total_counter']} |`;
-    message += "</td><td>";
+
+    message += "\n</td><td>\n";
 
     message += "| Metric | Values |\n";
     message += "| --- | --- |\n";
@@ -17843,7 +17844,8 @@ function createComment(results) {
     message += "| Total queries | " + results['queries_total'] + "\n";
     message += "| Queries failed to execute | " + results['queries_failed_to_execute'] + "\n";
     message += "| Execution time | " + moment(results['end']).diff(moment(results['start']), 'seconds') + "s\n";
-    message += "</td></tr></table>";
+
+    message += "\n</td></tr>\n</table>\n";
 
     return message;
 }
