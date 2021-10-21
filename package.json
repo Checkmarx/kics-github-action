@@ -1,0 +1,33 @@
+{
+  "name": "kics-github-action",
+  "version": "1.0.0",
+  "description": "[![License: GPL-3.0](https://img.shields.io/badge/License-GPL3.0-yellow.svg)](https://www.gnu.org/licenses) [![Latest Release](https://img.shields.io/github/v/release/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/releases) [![Open Issues](https://img.shields.io/github/issues-raw/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/issues)",
+  "main": "index.js",
+  "scripts": {
+    "build": "ncc build src/main.js",
+    "format": "prettier --write **/*.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Checkmarx/kics-github-action.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "GNU GENERAL PUBLIC LICENSE",
+  "bugs": {
+    "url": "https://github.com/Checkmarx/kics-github-action/issues"
+  },
+  "homepage": "https://github.com/Checkmarx/kics-github-action#readme",
+  "dependencies": {
+    "@actions/core": "^1.6.0",
+    "@actions/exec": "^1.1.0",
+    "@actions/github": "^5.0.0",
+    "@actions/io": "^1.1.1",
+    "@actions/tool-cache": "^1.7.1",
+    "moment": "^2.29.1"
+  },
+  "devDependencies": {
+    "@vercel/ncc": "^0.31.1",
+    "prettier": "^2.4.1"
+  }
+}

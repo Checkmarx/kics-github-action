@@ -1,0 +1,24 @@
+name: Test KICS action
+
+on:
+  workflow_dispatch:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: mkdir -p myoutput
+      - name: Test KICS action
+        uses: ./
+        with:
+          path: test/samples/positive1.tf,test/samples/positive2.tf
+          token: ${{ secrets.GITHUB_TOKEN }}
+          timeout: 60
+          output_path: myoutput/
+          output_formats: sarif
+          ignore_on_exit: results
+          enable_comments: true
+      - run: ls -la && ls -la myoutput
+        if: always()
