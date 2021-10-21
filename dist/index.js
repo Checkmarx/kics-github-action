@@ -17882,14 +17882,14 @@ function createComment(results) {
 
     message += "\n\n</td><td>\n\n";
 
-    message += "| | Metric | Values |\n";
-    message += "| --- | --- | --- |\n";
-    message += `| ![placeholder](${emptyIcon}) | Files scanned | ${results['files_scanned']}\n`;
-    message += `| ![placeholder](${emptyIcon}) | Files parsed | ${results['files_parsed']}\n`;
-    message += `| ![placeholder](${emptyIcon}) | Files failed to scan | ${results['files_failed_to_scan']}\n`;
-    message += `| ![placeholder](${emptyIcon}) | Total executed queries | ${results['queries_total']}\n`;
-    message += `| ![placeholder](${emptyIcon}) | Queries failed to execute | ${results['queries_failed_to_execute']}\n`;
-    message += `| ![placeholder](${emptyIcon}) | Execution time | ${moment(results['end']).diff(moment(results['start']), 'seconds')}\n`;
+    message += "| Metric | Values |\n";
+    message += "| --- | --- |\n";
+    message += `| Files scanned ![placeholder](${emptyIcon}) | ${results['files_scanned']}\n`;
+    message += `| Files parsed ![placeholder](${emptyIcon}) | ${results['files_parsed']}\n`;
+    message += `| Files failed to scan ![placeholder](${emptyIcon}) | ${results['files_failed_to_scan']}\n`;
+    message += `| Total executed queries ![placeholder](${emptyIcon}) | ${results['queries_total']}\n`;
+    message += `| Queries failed to execute ![placeholder](${emptyIcon}) | ${results['queries_failed_to_execute']}\n`;
+    message += `| Execution time ![placeholder](${emptyIcon}) | ${moment(results['end']).diff(moment(results['start']), 'seconds')}\n`;
 
     message += "\n</td></tr>\n</table>\n\n";
 
