@@ -1,62 +1,10 @@
-const install = require("./install");
 const commenter = require("./commenter");
-const scanner = require("./scanner");
 const annotator = require("./annotator");
-
 const core = require("@actions/core");
 const github = require("@actions/github");
 const io = require("@actions/io");
-
+const filepath = require('path');
 const fs = require("fs");
-
-const exitStatus = {
-    results: {
-        codes: {
-            HIGH: 50,
-            MEDIUM: 40,
-            LOW: 30,
-            INFO: 20,
-        },
-        isResultExitStatus: function (exitCode) {
-            for (const key in this.codes) {
-                if (this.codes[key] === exitCode) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-}
-
-function setWorkflowStatus(statusCode) {
-    console.log(`KICS scan status code: ${statusCode}`);
-
-    if (statusCode === 0) {
-        return;
-    }
-
-    const ignoreOnExit = core.getInput('ignore_on_exit');
-
-    if (ignoreOnExit.toLowerCase() === 'all') {
-        console.log(`ignore_on_exit=all :: Ignoring exit code ${statusCode}`);
-        return;
-    }
-
-    if (ignoreOnExit.toLowerCase() === 'results') {
-        if (exitStatus.results.isResultExitStatus(statusCode)) {
-            console.log(`ignore_on_exit=results :: Ignoring exit code ${statusCode}`);
-            return;
-        }
-    }
-    if (ignoreOnExit.toLowerCase() === 'errors') {
-        if (!exitStatus.results.isResultExitStatus(statusCode)) {
-            console.log(`ignore_on_exit=errors :: Ignoring exit code ${statusCode}`);
-            return;
-        }
-    }
-
-    core.setFailed(`KICS scan failed with exit code ${statusCode}`);
-}
 
 function readJSON(filename) {
     const rawdata = fs.readFileSync(filename);
@@ -64,17 +12,47 @@ function readJSON(filename) {
     return parsedJSON;
 }
 
-function cleanupOutput(resultsJSONFile) {
-    const outputFormats = core.getInput('output_formats');
-    if (!outputFormats.toLowerCase().includes('json') || core.getInput('output_path') === '') {
+function cleanupOutput(resultsJSONFile, outputFormats) {
+    if (!outputFormats.toLowerCase().includes('json') || outputFormats === '') {
         io.rmRF(resultsJSONFile);
     }
 }
 
+function processOutputPath(output) {
+    if (output === '') {
+        return {
+            path: "./",
+            resultsJSONFile: "./results.json"
+        }
+    }
+
+    return {
+        path: output,
+        resultsJSONFile: filepath.join(output, "/results.json")
+    }
+}
+
+function setWorkflowStatus(statusCode) {
+    console.log(`KICS scan status code: ${statusCode}`);
+
+    if (statusCode === "0") {
+        return;
+    }
+
+    core.setFailed(`KICS scan failed with exit code ${statusCode}`);
+}
+
 async function main() {
     console.log("Running KICS action...");
+
+    // Get ENV variables
+    const githubToken = process.env.INPUT_TOKEN;
+    const enableComments = process.env.INPUT_ENABLE_COMMENTS;
+    const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH);
+    const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
+    const exitCode = process.env.KICS_EXIT_CODE
+
     try {
-        const githubToken = core.getInput("token");
         const octokit = github.getOctokit(githubToken);
         let context = {};
         let repo = '';
@@ -90,17 +68,15 @@ async function main() {
             }
         }
 
-        await install.installKICS();
-        const scanResults = await scanner.scanWithKICS();
-        const parsedResults = readJSON(scanResults.resultsJSONFile);
-        if (core.getInput('enable_comments').toLocaleLowerCase() === "true") {
+        const parsedResults = readJSON(outputPath.resultsJSONFile);
+        if (enableComments.toLocaleLowerCase() === "true") {
             await commenter.postPRComment(parsedResults, repo, prNumber, octokit);
         }
 
         annotator.annotateChangesWithResults(parsedResults);
 
-        cleanupOutput(scanResults.resultsJSONFile);
-        setWorkflowStatus(scanResults.statusCode);
+        setWorkflowStatus(exitCode);
+        cleanupOutput(outputPath.resultsJSONFile, outputFormats);
     } catch (e) {
         console.error(e);
         core.setFailed(e.message);

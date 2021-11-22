@@ -8,7 +8,7 @@ inputs:
     default: ${{github.token}}
   enable_comments:
     required: false
-    default: false
+    default: "false"
     description: "Enable pull request report comments"
   path:
     description: "paths to a file or directories to scan, accepts a comma separated list"
@@ -79,12 +79,59 @@ inputs:
   bom:
     description: "include bill of materials (BoM) in results output"
     required: false
-outputs:
-  results:
-    description: "the result of KICS scan"
 branding:
   icon: "shield"
   color: "green"
 runs:
-  using: node12
-  main: dist/index.js
+  using: "composite"
+  steps:
+    - uses: actions/checkout@v2
+    - run: chmod +x ./entrypoint.sh
+      shell: bash
+    - name: Run KICS Scan
+      id: kics_scan
+      uses: docker://checkmarx/kics:v1.4.7-alpine
+      env:
+        INPUT_PATH: ${{ inputs.path }}
+        INPUT_FAIL_ON: ${{ inputs.fail_on }}
+        INPUT_TIMEOUT: ${{ inputs.timeout }}
+        INPUT_PROFILING: ${{ inputs.profiling }}
+        INPUT_CONFIG_PATH: ${{ inputs.config }}
+        INPUT_PLATFORM_TYPE: ${{ inputs.platform_type }}
+        INPUT_EXCLUDE_PATHS: ${{ inputs.exclude_paths }}
+        INPUT_EXCLUDE_QUERIES: ${{ inputs.exclude_queries }}
+        INPUT_INCLUDE_QUERIES: ${{ inputs.include_queries }}
+        INPUT_EXCLUDE_CATEGORIES: ${{ inputs.exclude_categories }}
+        INPUT_EXCLUDE_RESULTS: ${{ inputs.exclude_results }}
+        INPUT_OUTPUT_FORMATS: ${{ inputs.output_formats }}
+        INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
+        INPUT_PAYLOAD_PATH: ${{ inputs.payload_path }}
+        INPUT_QUERIES: ${{ inputs.queries }}
+        INPUT_VERBOSE: ${{ inputs.verbose }}
+        INPUT_BOM: ${{ inputs.bom }}
+        INPUT_IGNORE_ON_EXIT: ${{ inputs.ignore_on_exit }}
+        INPUT_DISABLE_SECRETS: ${{ inputs.disable_secrets }}
+        INPUT_DISABLE_FULL_DESCRIPTIONS: ${{ inputs.disable_full_descriptions }}
+        INPUT_LIBRARIES_PATH: ${{ inputs.libraries_path }}
+        INPUT_SECRETS_REGEXES_PATH: ${{ inputs.secrets_regexes_path}}
+      with:
+        entrypoint: ./entrypoint.sh
+    - name: Run KICS PR Comentator
+      uses: actions/setup-node@v2
+      with:
+        node-version: 12.x
+    - name: Install dependencies
+      shell: bash
+      run: npm ci
+    - run: |
+        sudo chown -R ${USER} ${{ inputs.output_path }}
+        npm run build --if-present
+      shell: bash
+    - run: node dist/index.js
+      shell: bash
+      env:
+        INPUT_TOKEN: ${{ inputs.token }}
+        INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
+        INPUT_ENABLE_COMMENTS: ${{ inputs.enable_comments }}
+        INPUT_OUTPUT_FORMATS: ${{ inputs.output_formats }}
+        KICS_EXIT_CODE: ${{ steps.kics_scan.outputs.exit_code }}
