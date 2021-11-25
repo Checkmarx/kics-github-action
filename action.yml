@@ -86,8 +86,6 @@ runs:
   using: "composite"
   steps:
     - uses: actions/checkout@v2
-    - run: chmod +x ./entrypoint.sh
-      shell: bash
     - name: Run KICS Scan
       id: kics_scan
       uses: docker://checkmarx/kics:v1.4.8-alpine
