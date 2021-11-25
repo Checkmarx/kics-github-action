@@ -113,7 +113,8 @@ runs:
         INPUT_LIBRARIES_PATH: ${{ inputs.libraries_path }}
         INPUT_SECRETS_REGEXES_PATH: ${{ inputs.secrets_regexes_path}}
       with:
-        entrypoint: ./entrypoint.sh
+        args: '-v "/home/runner/work/kics-github-action/kics-github-action":"/action/"'
+        entrypoint: ./test_entrypoint.sh
     - name: Run KICS PR Comentator
       uses: actions/setup-node@v2
       with:
