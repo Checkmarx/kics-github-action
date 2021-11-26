@@ -1,6 +1,6 @@
 const moment = require('moment')
 
-const kicsLogo = "https://user-images.githubusercontent.com/75368139/136991766-a4e5bc8b-63db-48f7-9384-740e9f15c9f6.png"
+const kicsLogo = "https://user-images.githubusercontent.com/74597872/143567454-f65ad285-00d8-4875-845d-568d2e67d868.png"
 const severityOrder = ["HIGH", "MEDIUM", "LOW", "INFO", "TRACE"];
 const severityIcons = {
     "HIGH": "https://user-images.githubusercontent.com/23239410/92157087-97285600-ee32-11ea-988f-0aca12c4c126.png",
