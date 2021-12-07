@@ -67,7 +67,7 @@ And official documentation page <a href="https://docs.kics.io">docs.kics.io</a>
 | exclude_results           | 'd4a1fa80-d9d8-450f-87c2-e1f6669c41f8'  | exclude results by providing the similarity ID of a result                                                                                                  | String  | No       | N/A                                           |
 | include_queries           | a227ec01-f97a-4084-91a4-47b350c1db54    | include only specified list of queries to the scan, cannot be provided with query exclusion flags                                                           | String  | No       | N/A                                           |
 | output_formats            | 'json,sarif'                            | formats in which the results report will be exported                                                                                                        | String  | No       | json                                          |
-| output_path               | results.json                            | file path to store result in json format                                                                                                                    | String  | No       | N/A                                           |
+| output_path               | myResults/                              | file path to store result in json format                                                                                                                    | String  | No       | "./"                                          |
 | payload_path              | /tmp/mypayload.json                     | file path to store source internal representation in JSON format                                                                                            | String  | No       | N/A                                           |
 | queries                   |                                         | path to directory with queries (default "./assets/queries")                                                                                                 | String  | No       | ./assets/queries downloaded with the binaries |
 | verbose                   | true                                    | verbose scan                                                                                                                                                | Boolean | No       | false                                         |
@@ -92,11 +92,11 @@ And official documentation page <a href="https://docs.kics.io">docs.kics.io</a>
       with:
         # scanning two directories: ./terraform/ ./cfn-templates/ plus a single file
         path: 'terraform,cfn-templates,my-other-sub-folder/Dockerfile'
-        output_path: 'results.json'
+        output_path: myResults/
     # Display the results in json format
     - name: display kics results
       run: |
-        cat results.json
+        cat myResults/results.json
 ```
 
 ## Workflow failures
@@ -115,10 +115,10 @@ If you want KICS to ignore the results and return exit status code 0 unless a KI
       with:
         path: 'terraform'
         ignore_on_exit: results
-        output_path: 'results.json'
+        output_path: myResults/
     - name: display kics results
       run: |
-        cat results.json
+        cat myResults/results.json
 ```
 
 ### Fail by severity usage example
@@ -133,10 +133,10 @@ If want your pipeline just to fail on HIGH and MEDIUM severity results and KICS 
       with:
         path: 'terraform,my-other-sub-folder/Dockerfile'
         fail_on: high,medium
-        output_path: 'results.json'
+        output_path: myResults/
     - name: display kics results
       run: |
-        cat results.json
+        cat myResults/results.json
 ```
 
 ## Enabling Pull Request Comment
@@ -218,10 +218,10 @@ You can only enable one profiler at a time, CPU or MEM.
       with:
         path: 'terraform'
         profiling: MEM
-        output_path: 'results.json'
+        output_path: myResults/
     - name: display kics results
       run: |
-        cat results.json
+        cat myResults/results.json
 ```
 
 ## Uploading SARIF report
