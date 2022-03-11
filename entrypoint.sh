@@ -46,8 +46,8 @@ fi
 ###############################################
 # Add JSON as Report Format if not present    #
 ###############################################
-if [ ! -z "$INPUT_OUTPUT_FORMATS" ]; then
-    if [[ "json" == *"$INPUT_OUTPUT_FORMATS"* ]]; then
+if [ -n "$INPUT_OUTPUT_FORMATS" ]; then
+    if [[ $INPUT_OUTPUT_FORMATS == *"json"* ]]; then
         OUTPUT_FORMATS_PARAM="--report-formats $INPUT_OUTPUT_FORMATS"
     else
         OUTPUT_FORMATS_PARAM="--report-formats $INPUT_OUTPUT_FORMATS,json"
