@@ -79,7 +79,6 @@ async function main() {
         cleanupOutput(outputPath.resultsJSONFile, outputFormats);
     } catch (e) {
         console.error(e);
-        core.setFailed(e.message);
     }
 }
 
