@@ -10,6 +10,14 @@ inputs:
     required: false
     default: "false"
     description: "Enable pull request report comments"
+  comments_with_queries:
+    required: false
+    default: "false"
+    description: "Add queries in th pull request report comments (available when enable_comments = true)"
+  excluded_column_for_comments_with_queries:
+    required: false
+    default: "description_id,similarity_id,search_line,search_value"
+    description: "Excluded columns for the comment with queries, accepts a comma separated list"
   path:
     description: "paths to a file or directories to scan, accepts a comma separated list"
     required: true
@@ -89,6 +97,8 @@ runs:
     INPUT_TOKEN: ${{ inputs.token }}
     INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
     INPUT_ENABLE_COMMENTS: ${{ inputs.enable_comments }}
+    INPUT_COMMENTS_WITH_QUERIES: ${{ inputs.comments_with_queries }}
+    INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES: ${{ inputs.excluded_column_for_comments_with_queries }}
     INPUT_OUTPUT_FORMATS: ${{ inputs.output_formats }}
     WORKSPACE_PATH: $GITHUB_WORKSPACE
   args:
