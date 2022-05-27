@@ -11,7 +11,7 @@ const severityIcons = {
 }
 const emptyIcon = "https://user-images.githubusercontent.com/75368139/137874724-5118ebc4-9769-4eb2-923d-e4ca479f747f.png"
 
-function createComment(results) {
+function createComment(results, withQueries = false, excludedColumnsForCommentsWithQueries) {
     let message = "![kics-logo](" + kicsLogo + ")\n";
     message += `\n**KICS version: ${results['kics_version']}**\n`
 
@@ -42,13 +42,96 @@ function createComment(results) {
 
     message += "\n</td></tr>\n</table>\n\n";
 
+    if (withQueries === false) {
+        return message;
+    }
+    message += "### Queries Results\n"
+
+    message += "<table>\n";
+    message += "<tr></tr>\n";
+    message += "<tr><td>\n\n";
+
+    const flattenedQueries = computeFlattenedQueries(results)
+    const headers = computeHeaders(flattenedQueries)
+
+    const excludedColumns = [
+        "query_url",
+        ... excludedColumnsForCommentsWithQueries
+    ]
+
+    // display header
+    for (let i in headers) {
+        if (excludedColumns.includes(headers[i])) {
+            continue
+        }
+        let title = headers[i]
+            .match(/([^\W_]+)/g)
+            .map(v => v.charAt(0).toUpperCase() + v.substr(1).toLowerCase())
+            .join(" ")
+        message += `| ${title}`
+    }
+    message += "|\n"
+
+    // display line separation
+    for (let i in headers) {
+        if (excludedColumns.includes(headers[i])) {
+            continue
+        }
+        message += "|:---"
+    }
+    message += "|\n"
+
+    flattenedQueries.forEach(function (query) {
+        headers.forEach(function (header) {
+            if (excludedColumns.includes(header)) {
+                return
+            }
+            if (query[header] === undefined) {
+                message += "| "
+                return
+            }
+            if (header === "query_name") {
+                message += `| [${query[header]}](${query["query_url"]})`
+                return
+            }
+            message += `| ${query[header].toString().replace("\n", " ")}`
+        })
+        message += "|\n"
+    })
+
+    message += "\n</td></tr>\n</table>\n\n";
+
     return message;
 }
 
-async function postPRComment(results, repo, prNumber, octokit) {
-    const message = createComment(results);
+function computeFlattenedQueries(results) {
+    let flattenedQueries = []
+    for (let index in results["queries"]) {
+        let value = results["queries"][index]
+        const { ['files']: files, ...valueWithoutFiles } = value
 
-    const { data: comments } = await octokit.rest.issues.listComments({
+        for (let idx in value["files"]) {
+            flattenedQueries.push({...valueWithoutFiles, ...value["files"][idx]})
+        }
+    }
+    return flattenedQueries
+}
+
+function computeHeaders(flattenedQueries) {
+    let tmpHeader = []
+    for (let ft in flattenedQueries) {
+        tmpHeader = [
+            ... tmpHeader,
+            ... Object.entries(flattenedQueries[ft]).map(v => v[0])
+        ]
+    }
+    return [...new Set(tmpHeader.map(v => v))]
+}
+
+async function postPRComment(results, repo, prNumber, octokit, commentWithQueries = false, excludedColumnsForCommentsWithQueries) {
+    const message = createComment(results, commentWithQueries, excludedColumnsForCommentsWithQueries);
+
+    const {data: comments} = await octokit.rest.issues.listComments({
         ...repo,
         issue_number: prNumber,
     });
