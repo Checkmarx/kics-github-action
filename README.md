@@ -33,16 +33,34 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 
 #### Supported Platforms
 
-<img alt="Terraform" src="images/logo-terraform.png" width="150">&nbsp;&nbsp;&nbsp;
+<img alt="Terraform" src="images/logo-terraform.png" width="100" >&nbsp;&nbsp;&nbsp;
 <img alt="Kubernetes" src="images/logo-k8s.png" width="150">&nbsp;&nbsp;&nbsp;
 <img alt="Docker" src="images/logo-docker.png" width="150">&nbsp;&nbsp;&nbsp;
 <br>
+<br>
 <img alt="CloudFormation" src="images/logo-cf.png" width="150">&nbsp;&nbsp;&nbsp;
 <img alt="Ansible" src="images/logo-ansible.png" width="150">&nbsp;&nbsp;&nbsp;
-<img alt="OpenAPI" src="images/logo-openapi.png" width="150">&nbsp;&nbsp;&nbsp;
-<br>
-<br>
 <img alt="Helm" src="images/logo-helm.png" width="150">&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+<img alt="OpenAPI" src="images/logo-openapi.png" width="150">&nbsp;&nbsp;&nbsp;
+<img alt="gRPC" src="images/logo-grpc.png" width="120">&nbsp;&nbsp;&nbsp;
+<img alt="Azure Resource Manager" src="images/logo-arm.png" width="55">&nbsp;&nbsp;&nbsp;
+<img alt="Google Deployment Manager" src="images/logo-gdm.png" width="55">&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+<img alt="Cloud Deployment Kit" src="images/logo-cdk.png" width="150">&nbsp;&nbsp;&nbsp;
+<img alt="SAM" src="images/logo-sam.png" width="55">&nbsp;&nbsp;&nbsp;
+<img alt="Docker Compose" src="images/logo-dockercompose.png" width="80">&nbsp;&nbsp;&nbsp;
+<img alt="Knative" src="images/logo-knative.png" width="80">&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+<img alt="Crossplane" src="images/logo-crossplane.png" width="150">&nbsp;&nbsp;&nbsp;
+<img alt="Pulumi" src="images/logo-pulumi.png" width="130">&nbsp;&nbsp;&nbsp;
+<img alt="ServerlessFW" src="images/logo-serverlessfw.png" width="150">&nbsp;&nbsp;&nbsp;
+<br>
+<br>
+<img alt="Azure BluePrints" src="images/logo-azure-blueprints.png" width="100">&nbsp;&nbsp;&nbsp;
 
 
 ### Please find more info in the official website: <a href="https://kics.io">kics.io</a>
