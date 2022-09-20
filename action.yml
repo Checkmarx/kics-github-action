@@ -51,6 +51,9 @@ inputs:
   exclude_results:
     description: "exclude results by providing the similarity ID of a result"
     required: false
+  exclude_severities:
+    description: "exclude results by providing the severity of a result"
+    required: false
   output_formats:
     description: "formats in which the results report will be exported (json, sarif)"
     required: false
@@ -113,6 +116,7 @@ runs:
     - ${{ inputs.include_queries }}
     - ${{ inputs.exclude_categories }}
     - ${{ inputs.exclude_results }}
+    - ${{ inputs.exclude_severities }}
     - ${{ inputs.output_formats }}
     - ${{ inputs.output_path }}
     - ${{ inputs.payload_path }}
