@@ -1,4 +1,4 @@
-# KICS Github Action
+# KICS GitHub Action
 
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL3.0-yellow.svg)](https://www.gnu.org/licenses)
 [![Latest Release](https://img.shields.io/github/v/release/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/releases)
@@ -88,6 +88,7 @@ And ensure that you're using the <a href="https://github.com/Checkmarx/kics-gith
 | exclude_categories                        | 'Observability,Networking and Firewall'                | exclude categories by providing its name, comma separated list                                                                                              | String  | No       | N/A                                                    |
 | exclude_results                           | 'd4a1fa80-d9d8-450f-87c2-e1f6669c41f8'                 | exclude results by providing the similarity ID of a result                                                                                                  | String  | No       | N/A                                                    |
 | exclude_severities                        | 'info,low'                                             | exclude results by providing the severity of a result                                                                                                       | String  | No       | N/A                                                    |
+| exclude_gitignore                         |                                                        | disables the exclusion of paths specified within .gitignore file                                                                                             | Boolean  | No       | false                                                    |
 | include_queries                           | a227ec01-f97a-4084-91a4-47b350c1db54                   | include only specified list of queries to the scan, cannot be provided with query exclusion flags                                                           | String  | No       | N/A                                                    |
 | output_formats                            | 'json,sarif'                                           | formats in which the results report will be exported                                                                                                        | String  | No       | json                                                   |
 | output_path                               | myResults/                                             | file path to store result in json format                                                                                                                    | String  | No       | "./"                                                   |
@@ -100,6 +101,7 @@ And ensure that you're using the <a href="https://github.com/Checkmarx/kics-gith
 | disable_secrets                           | false                                                  | disable secrets detection                                                                                                                                   | Boolean | false    |
 | secrets_regexes_path                      | ./mydir/secrets-config.json                            | path to custom secrets regex rules configuration file                                                                                                       | String  | No       | N/A                                                    |
 | libraries_path                            | ./myLibsDir                                            | path to directory with Rego libraries                                                                                                                       | String  | No       | N/A                                                    |
+| cloud_provider                            | aws,azure                                            | list of cloud providers to scan (alicloud, aws, azure, gcp)                                                                                                                       | String  | No       | N/A                                                    |
 
 
 ## Simple usage example
