@@ -110,10 +110,10 @@ And ensure that you're using the <a href="https://github.com/Checkmarx/kics-gith
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
     # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     # Scan Iac with kics
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.5
+      uses: checkmarx/kics-github-action@v1.6
       with:
         # scanning two directories: ./terraform/ ./cfn-templates/ plus a single file
         path: 'terraform,cfn-templates,my-other-sub-folder/Dockerfile'
@@ -134,9 +134,9 @@ If you want KICS to ignore the results and return exit status code 0 unless a KI
 
 ```yaml
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.5
+      uses: checkmarx/kics-github-action@v1.6
       with:
         path: 'terraform'
         ignore_on_exit: results
@@ -152,9 +152,9 @@ If want your pipeline just to fail on HIGH and MEDIUM severity results and KICS 
 
 ```yaml
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.5
+      uses: checkmarx/kics-github-action@v1.6
       with:
         path: 'terraform,my-other-sub-folder/Dockerfile'
         fail_on: high,medium
@@ -178,9 +178,9 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.5
+      uses: checkmarx/kics-github-action@v1.6
         with:
           path: test/samples/positive1.tf,test/samples/positive2.tf
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -237,9 +237,9 @@ You can only enable one profiler at a time, CPU or MEM.
 
 ```yaml
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.5
+      uses: checkmarx/kics-github-action@v1.6
       with:
         path: 'terraform'
         profiling: MEM
@@ -265,12 +265,12 @@ jobs:
     name: kics-action
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Mkdir results-dir
         # make sure results dir is created
         run: mkdir -p results-dir
       - name: Run KICS Scan with SARIF result
-        uses: checkmarx/kics-github-action@v1.5
+        uses: checkmarx/kics-github-action@v1.6
         with:
           path: 'terraform'
           # when provided with a directory on output_path
@@ -311,7 +311,7 @@ jobs:
     name: kics-action
     steps:
       - name: Checkout repo
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Mkdir results-dir
         # make sure results dir is created
         run: mkdir -p results-dir
@@ -335,7 +335,7 @@ jobs:
           }
           EOF
       - name: Run KICS Scan using config
-        uses: checkmarx/kics-github-action@v1.5
+        uses: checkmarx/kics-github-action@v1.6
         with:
           path: 'terraform'
           config_path: ./kics.config
