@@ -1,4 +1,5 @@
 const moment = require('moment')
+const { summary } = require('@actions/core/lib/summary');
 
 const kicsLogo = "https://user-images.githubusercontent.com/74597872/143567454-f65ad285-00d8-4875-845d-568d2e67d868.png"
 const severityOrder = ["HIGH", "MEDIUM", "LOW", "INFO", "TRACE"];
@@ -158,6 +159,12 @@ async function postPRComment(results, repo, prNumber, octokit, commentWithQuerie
     }
 }
 
+async function postJobSummary(results, commentWithQueries = false, excludedColumnsForCommentsWithQueries) {
+    const message = createComment(results, commentWithQueries, excludedColumnsForCommentsWithQueries);
+    await summary.addRaw(message).write()
+}
+
 module.exports = {
-    postPRComment
+    postPRComment,
+    postJobSummary
 };

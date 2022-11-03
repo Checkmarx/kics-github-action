@@ -20,6 +20,7 @@ jobs:
           output_formats: sarif
           ignore_on_exit: results
           enable_comments: true
+          enable_jobs_summary: true
           comments_with_queries: true
           excluded_column_for_comments_with_queries: "description_id,similarity_id,search_line,search_value,cis_description_id,cis_description_title,cis_description_text,cloud_provider"
       - run: ls -la && ls -la myoutput
