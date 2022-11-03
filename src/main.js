@@ -47,6 +47,7 @@ async function main() {
 
     // Get ENV variables
     const githubToken = process.env.INPUT_TOKEN;
+    const disableAnnotations = process.env.INPUT_DISABLE_ANNOTATIONS;
     const enableComments = process.env.INPUT_ENABLE_COMMENTS;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
@@ -71,11 +72,12 @@ async function main() {
         }
 
         const parsedResults = readJSON(outputPath.resultsJSONFile);
+        if (disableAnnotations.toLocaleLowerCase() === "false") {
+            annotator.annotateChangesWithResults(parsedResults);
+        }
         if (enableComments.toLocaleLowerCase() === "true") {
             await commenter.postPRComment(parsedResults, repo, prNumber, octokit, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
         }
-
-        annotator.annotateChangesWithResults(parsedResults);
 
         setWorkflowStatus(exitCode);
         cleanupOutput(outputPath.resultsJSONFile, outputFormats);
