@@ -48,6 +48,7 @@ async function main() {
     // Get ENV variables
     const githubToken = process.env.INPUT_TOKEN;
     const enableComments = process.env.INPUT_ENABLE_COMMENTS;
+    const enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
     const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH);
@@ -73,6 +74,9 @@ async function main() {
         const parsedResults = readJSON(outputPath.resultsJSONFile);
         if (enableComments.toLocaleLowerCase() === "true") {
             await commenter.postPRComment(parsedResults, repo, prNumber, octokit, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
+        }
+        if (enableJobsSummary.toLocaleLowerCase() === "true") {
+            await commenter.postJobSummary(parsedResults, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
         }
 
         annotator.annotateChangesWithResults(parsedResults);
