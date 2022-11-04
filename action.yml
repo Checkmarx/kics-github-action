@@ -14,6 +14,10 @@ inputs:
     required: false
     default: "false"
     description: "Enable pull request report comments"
+  enable_jobs_summary:
+    required: false
+    default: "false"
+    description: "Enable report as jobs summary"
   comments_with_queries:
     required: false
     default: "false"
@@ -111,6 +115,7 @@ runs:
     INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
     INPUT_DISABLE_ANNOTATIONS: ${{ inputs.disable_annotations }}
     INPUT_ENABLE_COMMENTS: ${{ inputs.enable_comments }}
+    INPUT_ENABLE_JOBS_SUMMARY: ${{ inputs.enable_jobs_summary }}
     INPUT_COMMENTS_WITH_QUERIES: ${{ inputs.comments_with_queries }}
     INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES: ${{ inputs.excluded_column_for_comments_with_queries }}
     INPUT_OUTPUT_FORMATS: ${{ inputs.output_formats }}

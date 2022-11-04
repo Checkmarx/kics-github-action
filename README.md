@@ -6,7 +6,7 @@
 
 - [KICS Github Action](#kics-github-action)
   - [Integrate KICS into your GitHub workflows](#integrate-kics-into-your-github-workflows)
-      - [Supported Platforms](#supported-platforms)
+    - [Supported Platforms](#supported-platforms)
     - [Please find more info in the official website: <a href="https://kics.io">kics.io</a>](#please-find-more-info-in-the-official-website-kicsio)
   - [Inputs](#inputs)
   - [Simple usage example](#simple-usage-example)
@@ -76,6 +76,7 @@ And ensure that you're using the <a href="https://github.com/Checkmarx/kics-gith
 | enable_comment                            | true                                                   | Enable pull request report comments                                                                                                                         | Boolean | No       | false                                                  |
 | disable_annotations                       | true                                                   | Disable annotations report                                                                                                                                  | Boolean | No       | false                                                  |
 | comments_with_queries                     | true                                                   | Add queries in th pull request report comments (available when enable_comments = true)                                                                      | Boolean | No       | false                                                  |
+| enable_jobs_summary                       | true                                                   | Enable report as jobs summary                                                                                                                               | Boolean | No       | false                                                  |
 | excluded_column_for_comments_with_queries | description_id,similarity_id,search_line,search_value  | Excluded columns for the comment with queries, accepts a comma separated list                                                                               | String  | No       | description_id,similarity_id,search_line,search_value  |
 | path                                      | terraform/main.tf,Dockerfile                           | paths to a file or directories to scan, comma separated list                                                                                                | String  | Yes      | N/A                                                    |
 | ignore_on_exit                            | results                                                | defines which non-zero exit codes should be ignored (all, results, errors, none)                                                                            | String  | No       | none                                                   |
@@ -238,16 +239,16 @@ You can only enable one profiler at a time, CPU or MEM.
 
 ```yaml
     steps:
-    - uses: actions/checkout@v3
-    - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.6
-      with:
-        path: 'terraform'
-        profiling: MEM
-        output_path: myResults/
-    - name: display kics results
-      run: |
-        cat myResults/results.json
+      - uses: actions/checkout@v3
+      - name: run kics Scan
+        uses: checkmarx/kics-github-action@v1.6
+        with:
+          path: 'terraform'
+          profiling: MEM
+          output_path: myResults/
+      - name: display kics results
+        run: |
+          cat myResults/results.json
 ```
 
 ## Uploading SARIF report
