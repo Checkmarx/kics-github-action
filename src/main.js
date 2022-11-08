@@ -47,7 +47,7 @@ async function main() {
 
     // Get ENV variables
     const githubToken = process.env.INPUT_TOKEN;
-    const disableAnnotations = process.env.INPUT_DISABLE_ANNOTATIONS;
+    const enableAnnotations = process.env.INPUT_DISABLE_ANNOTATIONS;
     const enableComments = process.env.INPUT_ENABLE_COMMENTS;
     const enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
@@ -73,7 +73,7 @@ async function main() {
         }
 
         const parsedResults = readJSON(outputPath.resultsJSONFile);
-        if (disableAnnotations.toLocaleLowerCase() === "false") {
+        if (enableAnnotations.toLocaleLowerCase() === "true") {
             annotator.annotateChangesWithResults(parsedResults);
         }
         if (enableComments.toLocaleLowerCase() === "true") {
