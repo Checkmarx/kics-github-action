@@ -6,6 +6,10 @@ inputs:
     description: "The GITHUB_TOKEN for the current workflow run"
     required: false
     default: ${{github.token}}
+  enable_annotations:
+    required: false
+    default: "true"
+    description: "Enable annotations report"
   enable_comments:
     required: false
     default: "false"
@@ -109,6 +113,7 @@ runs:
   env:
     INPUT_TOKEN: ${{ inputs.token }}
     INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
+    INPUT_ENABLE_ANNOTATIONS: ${{ inputs.enable_annotations }}
     INPUT_ENABLE_COMMENTS: ${{ inputs.enable_comments }}
     INPUT_ENABLE_JOBS_SUMMARY: ${{ inputs.enable_jobs_summary }}
     INPUT_COMMENTS_WITH_QUERIES: ${{ inputs.comments_with_queries }}
