@@ -194,9 +194,9 @@ jobs:
 ### PR Comment Example
 
 
-<img alt="KICS Logo" src="https://user-images.githubusercontent.com/74597872/143567454-f65ad285-00d8-4875-845d-568d2e67d868.png" width="150">
+<img alt="KICS Logo" src="https://user-images.githubusercontent.com/111127232/203822414-3d9ea198-b7ac-418b-afa4-cac1b68ee98e.png" width="150">
 
-**KICS version: 1.4.8**
+**KICS version: 1.6.0**
 
 <table>
 <tr></tr>
