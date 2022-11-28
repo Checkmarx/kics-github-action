@@ -47,9 +47,9 @@ async function main() {
 
     // Get ENV variables
     const githubToken = process.env.INPUT_TOKEN;
-    const enableAnnotations = process.env.INPUT_DISABLE_ANNOTATIONS;
-    const enableComments = process.env.INPUT_ENABLE_COMMENTS;
-    const enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
+    let enableAnnotations = process.env.INPUT_DISABLE_ANNOTATIONS;
+    let enableComments = process.env.INPUT_ENABLE_COMMENTS;
+    let enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
     const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH);
@@ -71,6 +71,10 @@ async function main() {
                 prNumber = context.payload.pull_request.number;
             }
         }
+
+        enableAnnotations = enableAnnotations ? enableAnnotations : "false"
+        enableComments = enableComments ? enableComments : "false"
+        enableJobsSummary = enableJobsSummary ? enableJobsSummary : "false"
 
         const parsedResults = readJSON(outputPath.resultsJSONFile);
         if (enableAnnotations.toLocaleLowerCase() === "true") {
