@@ -47,7 +47,7 @@ async function main() {
 
     // Get ENV variables
     const githubToken = process.env.INPUT_TOKEN;
-    let enableAnnotations = process.env.INPUT_DISABLE_ANNOTATIONS;
+    let enableAnnotations = process.env.INPUT_ENABLE_ANNOTATIONS;
     let enableComments = process.env.INPUT_ENABLE_COMMENTS;
     let enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
