@@ -8,6 +8,7 @@ if [ -z "$INPUT_PATH" ]; then
     echo "${DATETIME} - ERR input path can't be empty"
     exit 1
 else
+    INPUT_PATH=$(echo $INPUT_PATH | sed -e 's/^"//' -e 's/"$//')
     INPUT_PARAM="-p $INPUT_PATH"
 fi
 
