@@ -115,7 +115,7 @@ And ensure that you're using the <a href="https://github.com/Checkmarx/kics-gith
     - uses: actions/checkout@v3
     # Scan Iac with kics
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.6.3
+      uses: checkmarx/kics-github-action@v1.7.0
       with:
         # scanning two directories: ./terraform/ ./cfn-templates/ plus a single file
         path: 'terraform,cfn-templates,my-other-sub-folder/Dockerfile'
@@ -138,7 +138,7 @@ If you want KICS to ignore the results and return exit status code 0 unless a KI
     steps:
     - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.6.3
+      uses: checkmarx/kics-github-action@v1.7.0
       with:
         path: 'terraform'
         ignore_on_exit: results
@@ -156,7 +156,7 @@ If want your pipeline just to fail on HIGH and MEDIUM severity results and KICS 
     steps:
     - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.6.3
+      uses: checkmarx/kics-github-action@v1.7.0
       with:
         path: 'terraform,my-other-sub-folder/Dockerfile'
         fail_on: high,medium
@@ -182,7 +182,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v1.6.3
+      uses: checkmarx/kics-github-action@v1.7.0
         with:
           path: test/samples/positive1.tf,test/samples/positive2.tf
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -241,7 +241,7 @@ You can only enable one profiler at a time, CPU or MEM.
     steps:
       - uses: actions/checkout@v3
       - name: run kics Scan
-        uses: checkmarx/kics-github-action@v1.6.3
+        uses: checkmarx/kics-github-action@v1.7.0
         with:
           path: 'terraform'
           profiling: MEM
@@ -272,7 +272,7 @@ jobs:
         # make sure results dir is created
         run: mkdir -p results-dir
       - name: Run KICS Scan with SARIF result
-        uses: checkmarx/kics-github-action@v1.6.3
+        uses: checkmarx/kics-github-action@v1.7.0
         with:
           path: 'terraform'
           # when provided with a directory on output_path
@@ -337,7 +337,7 @@ jobs:
           }
           EOF
       - name: Run KICS Scan using config
-        uses: checkmarx/kics-github-action@v1.6.3
+        uses: checkmarx/kics-github-action@v1.7.0
         with:
           path: 'terraform'
           config_path: ./kics.config
