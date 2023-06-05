@@ -183,12 +183,12 @@ jobs:
     - uses: actions/checkout@v3
     - name: run kics Scan
       uses: checkmarx/kics-github-action@v1.7.0
-        with:
-          path: test/samples/positive1.tf,test/samples/positive2.tf
-          token: ${{ secrets.GITHUB_TOKEN }}
-          output_path: myResults/
-          ignore_on_exit: results
-          enable_comments: true
+      with:
+        path: test/samples/positive1.tf,test/samples/positive2.tf
+        token: ${{ secrets.GITHUB_TOKEN }}
+        output_path: myResults/
+        ignore_on_exit: results
+        enable_comments: true
 ```
 
 ### PR Comment Example
