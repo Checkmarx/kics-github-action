@@ -61,7 +61,7 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <br>
 <br>
 <img alt="Azure BluePrints" src="images/logo-azure-blueprints.png" width="100">&nbsp;&nbsp;&nbsp;
-
+<img alt="GitHub Workflows" src="images/logo-github-icon.png" width="100">&nbsp;&nbsp;&nbsp;
 
 ### Please find more info in the official website: <a href="https://kics.io">kics.io</a>
 
