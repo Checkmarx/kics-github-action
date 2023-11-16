@@ -70,9 +70,9 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 
 In order to run the Databricks and NIFCloud queries, use the `--experimental-queries` flag when running KICS.
 
-And official documentation page <a href="https://docs.kics.io">docs.kics.io</a>
+Official documentation page <a href="https://docs.kics.io">docs.kics.io</a>
 
-And ensure that you're using the <a href="https://github.com/Checkmarx/kics-github-action/releases">latest KICS Github Action release</a> when creating a workflow.
+Ensure that you're using the <a href="https://github.com/Checkmarx/kics-github-action/releases">latest KICS Github Action release</a> when creating a workflow.
 
 ## Inputs
 
