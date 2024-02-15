@@ -2,8 +2,9 @@ const moment = require('moment')
 const { summary } = require('@actions/core/lib/summary');
 
 const kicsLogo = "https://user-images.githubusercontent.com/111127232/203838108-ad537fea-4573-495a-9619-18500ee81dd9.png"
-const severityOrder = ["HIGH", "MEDIUM", "LOW", "INFO", "TRACE"];
+const severityOrder = ["CRITICAL","HIGH", "MEDIUM", "LOW", "INFO", "TRACE"];
 const severityIcons = {
+    "CRITICAL": "https://raw.githubusercontent.com/Checkmarx/kics-github-action/4d8cbbe0ba84707403c8715f72a5ba12c90887ef/images/Critical.png",
     "HIGH": "https://user-images.githubusercontent.com/23239410/92157087-97285600-ee32-11ea-988f-0aca12c4c126.png",
     "MEDIUM": "https://user-images.githubusercontent.com/23239410/92157093-98598300-ee32-11ea-83d7-af52251a011b.png",
     "LOW": "https://user-images.githubusercontent.com/23239410/92157091-98598300-ee32-11ea-8498-19bd7d62019b.png",
@@ -26,6 +27,10 @@ function createComment(results, withQueries = false, excludedColumnsForCommentsW
     for (let severity of severityOrder) {
         if (severity in severityCounters) {
             message += `| ![${severity}](${severityIcons[severity]}) | ${severity.toUpperCase()} | ${severityCounters[severity.toUpperCase()]} |\n`;
+        }
+        else {
+            const imageTag = `<img src="${severityIcons[severity]}" alt="${severity}" width="25">`;
+            message += `| ${imageTag} | ${severity.toUpperCase()} | 0 |\n`;
         }
     }
     message += `| ![TOTAL](${emptyIcon}) | TOTAL | ${results['total_counter']} |`;
