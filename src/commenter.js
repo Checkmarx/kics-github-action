@@ -29,7 +29,6 @@ function createComment(results, withQueries = false, excludedColumnsForCommentsW
             message += `| ![${severity}](${severityIcons[severity]}) | ${severity.toUpperCase()} | ${severityCounters[severity.toUpperCase()]} |\n`;
         }
         else {
-            //const imageTag = `<img src="${severityIcons[severity]}" alt="${severity}" width="25">`;
             message += `| ![${severity}](${severityIcons[severity]}) | ${severity.toUpperCase()} | 0 |\n`;
         }
     }
