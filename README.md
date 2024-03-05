@@ -67,8 +67,9 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 #### Beta Features
 <img alt="Databricks" src="images/logo-databricks.png" width="200">&nbsp;&nbsp;&nbsp;
 <img alt="NIFCloud" src="images/logo-nifcloud.png" width="110">&nbsp;&nbsp;&nbsp;
+<img alt="TencentCloud" src="images/logo-tencentcloud.png" width="180">&nbsp;&nbsp;&nbsp;
 
-In order to run the Databricks and NIFCloud queries, use the `--experimental-queries` flag when running KICS.
+In order to run the Databricks, NIFCloud and TencentCloud queries, use the `--experimental-queries` flag when running KICS.
 
 Official documentation page <a href="https://docs.kics.io">docs.kics.io</a>
 
