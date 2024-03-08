@@ -6,8 +6,8 @@
 
 - [KICS GitHub Action](#kics-github-action)
   - [Integrate KICS into your GitHub workflows](#integrate-kics-into-your-github-workflows)
-      - [Supported Platforms](#supported-platforms)
-    - [Please find more info in the official website: kics.io](#please-find-more-info-in-the-official-website-kicsio)
+    - [Supported Platforms](#supported-platforms)
+    - [Please find more info in the official website: <a href="https://kics.io">kics.io</a>](#please-find-more-info-in-the-official-website-kicsio)
   - [Inputs](#inputs)
   - [Simple usage example](#simple-usage-example)
   - [Workflow failures](#workflow-failures)
