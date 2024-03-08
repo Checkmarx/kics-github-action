@@ -5,11 +5,13 @@ const github = require("@actions/github");
 const io = require("@actions/io");
 const filepath = require('path');
 const fs = require("fs");
+const yaml = require('js-yaml');
+const { parse } = require('hcl-parser');
+const toml = require('@iarna/toml');
 
 function readJSON(filename) {
-    const rawdata = fs.readFileSync(filename);
-    const parsedJSON = JSON.parse(rawdata.toString());
-    return parsedJSON;
+    const rawData = fs.readFileSync(filename);
+    return JSON.parse(rawData.toString());
 }
 
 function cleanupOutput(resultsJSONFile, outputFormats) {
@@ -18,7 +20,17 @@ function cleanupOutput(resultsJSONFile, outputFormats) {
     }
 }
 
-function processOutputPath(output) {
+async function processOutputPath(output, configPath) {
+    let resultsFileName = '';
+    if (configPath !== '') {
+        [config_type, content] = await fileAnalyzer(configPath);
+
+        if (config_type !== '') {
+            output = content["output-path"] || output;
+            resultsFileName = content["output-name"] || '';
+        }
+    }
+
     if (output === '') {
         return {
             path: "./",
@@ -28,8 +40,43 @@ function processOutputPath(output) {
 
     return {
         path: output,
-        resultsJSONFile: filepath.join(output, "/results.json")
+        resultsJSONFile: resultsFileName || filepath.join(output, "/results.json")
     }
+}
+
+async function fileAnalyzer(filePath) {
+    const fileContent = await fs.promises.readFile(filePath, 'utf8');
+    let temp = {};
+
+    // Attempt to parse as JSON
+    try {
+        temp = JSON.parse(fileContent);
+        return ['json', temp];
+    } catch (jsonErr) {}
+
+    // Attempt to parse as YAML
+    try {
+        temp = yaml.safeLoad(fileContent);
+        return ['yaml', temp];
+    } catch (yamlErr) {}
+
+    // Attempt to parse as TOML
+    try {
+        temp = toml.parse(fileContent);
+        return ['toml', temp];
+    } catch (tomlErr) {}
+
+    // Attempt to parse as HCL
+    try {
+        const parsed = parse(fileContent);
+        if (parsed.body && parsed.body.length > 0) {
+            temp = parsed.body[0];
+            return ['hcl', temp];
+        }
+    } catch (hclErr) {}
+
+    console.log(`Error analyzing file: Invalid configuration file format`);
+    return ['', {}];
 }
 
 function setWorkflowStatus(statusCode) {
@@ -52,7 +99,7 @@ async function main() {
     let enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
-    const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH);
+    const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_CONFIG_PATH);
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
 
