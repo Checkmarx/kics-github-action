@@ -24,12 +24,15 @@
     "@actions/github": "^5.0.0",
     "@actions/io": "^1.1.1",
     "@actions/tool-cache": "^2.0.1",
+    "@iarna/toml": "^2.2.5",
+    "hcl-parser": "^0.1.1",
+    "js-yaml": "^4.1.0",
     "moment": "^2.29.4",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/uuid": "^8.3.4",
     "@vercel/ncc": "^0.36.1",
-    "prettier": "^2.4.1",
-    "@types/uuid": "^8.3.4"
+    "prettier": "^2.4.1"
   }
 }
