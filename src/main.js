@@ -6,7 +6,7 @@ const io = require("@actions/io");
 const filepath = require('path');
 const fs = require("fs");
 const yaml = require('js-yaml');
-var HCL = require("js-hcl-parser")
+const HCL = require("js-hcl-parser")
 const toml = require('@iarna/toml');
 
 function readJSON(filename) {
