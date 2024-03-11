@@ -6,7 +6,7 @@ const io = require("@actions/io");
 const filepath = require('path');
 const fs = require("fs");
 const yaml = require('js-yaml');
-const { parse } = require('hcl-parser');
+var HCL = require("js-hcl-parser")
 const toml = require('@iarna/toml');
 
 function readJSON(filename) {
@@ -22,7 +22,8 @@ function cleanupOutput(resultsJSONFile, outputFormats) {
 
 async function processOutputPath(output, configPath) {
     let resultsFileName = '';
-    if (configPath !== '') {
+    if (configPath !== '' ) {
+
         [config_type, content] = await fileAnalyzer(configPath);
 
         if (config_type !== '') {
@@ -38,45 +39,68 @@ async function processOutputPath(output, configPath) {
         }
     }
 
+    if (resultsFileName === '') {
+        resultsFileName = filepath.join(output, "/results.json")
+    } else {
+        resultsFileName = filepath.join(output, resultsFileName);
+    }
+
     return {
         path: output,
-        resultsJSONFile: resultsFileName || filepath.join(output, "/results.json")
+        resultsJSONFile: resultsFileName
     }
 }
 
+function readFileContent(filePath) {
+    try {
+        const stats = fs.statSync(filePath); // Use fs.statSync to get file stats synchronously
+        if (!stats.isFile()) {
+            throw new Error('Provided path is not a file.');
+        }
+        const data = fs.readFileSync(filePath, 'utf8'); // Use fs.readFileSync to read file content synchronously
+        return data;
+    } catch (error) {
+        console.error('Error reading file:', error);
+        return ''; // Return empty string or handle the error as needed
+    }
+}
 async function fileAnalyzer(filePath) {
-    const fileContent = await fs.promises.readFile(filePath, 'utf8');
+    const fileContent = await readFileContent(filePath);
     let temp = {};
 
+    if (fileContent === '') {
+        console.log('Error analyzing file: Empty file content');
+        return ['', {}];
+    }
     // Attempt to parse as JSON
     try {
-        temp = JSON.parse(fileContent);
-        return ['json', temp];
-    } catch (jsonErr) {}
-
-    // Attempt to parse as YAML
-    try {
-        temp = yaml.safeLoad(fileContent);
-        return ['yaml', temp];
-    } catch (yamlErr) {}
-
-    // Attempt to parse as TOML
-    try {
-        temp = toml.parse(fileContent);
-        return ['toml', temp];
-    } catch (tomlErr) {}
-
-    // Attempt to parse as HCL
-    try {
-        const parsed = parse(fileContent);
-        if (parsed.body && parsed.body.length > 0) {
-            temp = parsed.body[0];
-            return ['hcl', temp];
+        const jsonData = JSON.parse(fileContent);
+        return ['json', jsonData];
+    } catch (jsonError) {
+        // Attempt to parse as HCL
+        try {
+            const parsed = HCL.parse(fileContent);
+            const jsonData = JSON.parse(parsed);
+            return ['hcl', jsonData];
+        } catch (hclErr) {
+            console.log(`Error analyzing file: ${hclErr}`);
+            // Attempt to parse as TOML
+            try {
+                temp = toml.parse(fileContent);
+                return ['toml', temp];
+            } catch (tomlErr) {
+                // Attempt to parse as YAML
+                try {
+                    temp = yaml.load(fileContent);
+                    return ['yaml', temp];
+                } catch (yamlErr) {
+                    console.log(`Error analyzing file: ${yamlErr}`);
+                    console.log(`Error analyzing file: Invalid configuration file format`);
+                    return ['', {}];
+                }
+            }
         }
-    } catch (hclErr) {}
-
-    console.log(`Error analyzing file: Invalid configuration file format`);
-    return ['', {}];
+    }
 }
 
 function setWorkflowStatus(statusCode) {

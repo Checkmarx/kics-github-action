@@ -1,0 +1,8 @@
+path = "assets/iac_samples"
+verbose = true
+log-file = true
+type = "Dockerfile,Kubernetes"
+queries-path = "assets/queries"
+exclude-paths = [ "foo/", "bar/" ]
+output-path = "results"
+output-name = "res.json"
