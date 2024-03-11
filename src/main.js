@@ -54,11 +54,11 @@ async function processOutputPath(output, configPath) {
 function readFileContent(filePath) {
     try {
         // read file content
-        const stats = fs.statSync('./'+filePath); // Use fs.statSync to get file stats synchronously
+        const stats = fs.statSync("./".concat(filePath)); // Use fs.statSync to get file stats synchronously
         if (!stats.isFile()) {
             throw new Error('Provided path is not a file.');
         }
-        const data = fs.readFileSync('./'+filePath, 'utf8'); // Use fs.readFileSync to read file content synchronously
+        const data = fs.readFileSync("./".concat(filePath), 'utf8'); // Use fs.readFileSync to read file content synchronously
         return data;
     } catch (error) {
         console.error('Error reading file:', error);
