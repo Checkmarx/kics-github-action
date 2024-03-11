@@ -133,6 +133,7 @@ async function main() {
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
 
+    console.log("Output Path: ", outputPath);
     try {
         const octokit = github.getOctokit(githubToken);
         let context = {};
