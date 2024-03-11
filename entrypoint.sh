@@ -86,6 +86,9 @@ cp -r "${CP_PATH}" "/app/"
 
 cd /app
 
+# echo dirs
+ls -la
+
 # install and run nodejs
 apk add --update nodejs npm
 npm ci
