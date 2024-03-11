@@ -20,11 +20,11 @@ function cleanupOutput(resultsJSONFile, outputFormats) {
     }
 }
 
-async function processOutputPath(output, configPath) {
+async function processOutputPath(output, configPath, workspace) {
     let resultsFileName = '';
     if (configPath !== '' ) {
 
-        [config_type, content] = await fileAnalyzer(configPath);
+        [config_type, content] = await fileAnalyzer(configPath, workspace);
 
         if (config_type !== '') {
             output = content["output-path"] || output;
@@ -51,22 +51,23 @@ async function processOutputPath(output, configPath) {
     }
 }
 
-function readFileContent(filePath) {
+function readFileContent(filePath, workspace) {
     try {
         // read file content
-        const stats = fs.statSync( process.env.GITHUB_WORKSPACE+ "/"+filePath); // Use fs.statSync to get file stats synchronously
+
+        const stats = fs.statSync( filePath.join(workspace, filePath)); // Use fs.statSync to get file stats synchronously
         if (!stats.isFile()) {
             throw new Error('Provided path is not a file.');
         }
-        const data = fs.readFileSync(process.env.GITHUB_WORKSPACE+ "/"+filePath, 'utf8'); // Use fs.readFileSync to read file content synchronously
+        const data = fs.readFileSync(filePath.join(workspace, filePath), 'utf8'); // Use fs.readFileSync to read file content synchronously
         return data;
     } catch (error) {
         console.error('Error reading file:', error);
         return ''; // Return empty string or handle the error as needed
     }
 }
-async function fileAnalyzer(filePath) {
-    const fileContent = await readFileContent(filePath);
+async function fileAnalyzer(filePath, workspace) {
+    const fileContent = await readFileContent(filePath, workspace);
     let temp = {};
 
     if (fileContent === '') {
@@ -124,12 +125,9 @@ async function main() {
     let enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
-    const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_CONFIG_PATH);
+    const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_CONFIG_PATH, process.env.GITHUB_WORKSPACE);
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
-    const configPath = process.env.GITHUB_WORKSPACE
-
-    console.log("PATH do workspace: ", configPath)
 
     try {
         const octokit = github.getOctokit(githubToken);
