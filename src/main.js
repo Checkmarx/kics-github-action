@@ -127,6 +127,9 @@ async function main() {
     const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_CONFIG_PATH);
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
+    const configPath = process.env.GITHUB_WORKSPACE
+
+    console.log("PATH do workspace: ", configPath)
 
     try {
         const octokit = github.getOctokit(githubToken);
