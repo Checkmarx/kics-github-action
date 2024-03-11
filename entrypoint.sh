@@ -84,10 +84,9 @@ export KICS_EXIT_CODE=$?
 
 cp -r "${CP_PATH}" "/app/"
 
-tree /app
+cd /app
 
-# echo dirs
-ls -la
+# ec
 
 # install and run nodejs
 apk add --update nodejs npm
