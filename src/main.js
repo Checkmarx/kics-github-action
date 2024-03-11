@@ -25,7 +25,7 @@ async function processOutputPath(output, configPath, workspace) {
     if (configPath !== '' ) {
 
         [config_type, content] = await fileAnalyzer(configPath, workspace);
-
+        console.log(`Config type: ${config_type}`);
         if (config_type !== '') {
             output = content["output-path"] || output;
             resultsFileName = content["output-name"] || '';
@@ -54,12 +54,14 @@ async function processOutputPath(output, configPath, workspace) {
 function readFileContent(filePath, workspace) {
     try {
         // read file content
-
-        const stats = fs.statSync( filepath.join(workspace, filePath)); // Use fs.statSync to get file stats synchronously
+        console.log(`Reading file: ${filePath}`);
+        console.log(`Workspace: ${workspace}`);
+        const path = filepath.join(workspace, filePath);
+        const stats = fs.statSync( path); // Use fs.statSync to get file stats synchronously
         if (!stats.isFile()) {
             throw new Error('Provided path is not a file.');
         }
-        const data = fs.readFileSync(filepath.join(workspace, filePath), 'utf8'); // Use fs.readFileSync to read file content synchronously
+        const data = fs.readFileSync(path, 'utf8'); // Use fs.readFileSync to read file content synchronously
         return data;
     } catch (error) {
         console.error('Error reading file:', error);
@@ -125,6 +127,8 @@ async function main() {
     let enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
+    console.log("Output Path: ", process.env.INPUT_OUTPUT_PATH)
+    console.log("Config Path: ", process.env.INPUT_CONFIG_PATH)
     const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_CONFIG_PATH, "/github/workspace");
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
