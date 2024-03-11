@@ -129,7 +129,7 @@ async function main() {
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
     console.log("Output Path: ", process.env.INPUT_OUTPUT_PATH)
     console.log("Config Path: ", process.env.INPUT_CONFIG_PATH)
-    const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_CONFIG_PATH, "/github/workspace");
+    const outputPath = await processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_CONFIG_PATH, "/github/workspace");
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
 
