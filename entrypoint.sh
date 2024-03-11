@@ -84,7 +84,7 @@ export KICS_EXIT_CODE=$?
 
 cp -r "${CP_PATH}" "/app/"
 
-cd /app
+tree /app
 
 # echo dirs
 ls -la
