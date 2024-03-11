@@ -55,11 +55,11 @@ function readFileContent(filePath, workspace) {
     try {
         // read file content
 
-        const stats = fs.statSync( filePath.join(workspace, filePath)); // Use fs.statSync to get file stats synchronously
+        const stats = fs.statSync( filepath.join(workspace, filePath)); // Use fs.statSync to get file stats synchronously
         if (!stats.isFile()) {
             throw new Error('Provided path is not a file.');
         }
-        const data = fs.readFileSync(filePath.join(workspace, filePath), 'utf8'); // Use fs.readFileSync to read file content synchronously
+        const data = fs.readFileSync(filepath.join(workspace, filePath), 'utf8'); // Use fs.readFileSync to read file content synchronously
         return data;
     } catch (error) {
         console.error('Error reading file:', error);
