@@ -286,6 +286,7 @@ jobs:
           # in this example it will generate:
           # - results-dir/results.json
           # - results-dir/results.sarif
+          ignore_on_exit: results
           output_path: results-dir
           platform_type: terraform
           output_formats: 'json,sarif'
