@@ -30,7 +30,8 @@ async function processOutputPath(output, configPath, workspace) {
 
         if (config_type !== '') {
             if ( content["output-path"] !== undefined && content["output-path"] !== '' ) {
-                if (!filepath.startsWith('/') && !filepath.startsWith('./') && !filepath.startsWith('../')) {
+                const filePath = content["output-path"]
+                if (!filePath.startsWith('/') && !filePath.startsWith('./') && !filePath.startsWith('../')) {
                     content["output-path"] =  "/github/workspace" +  content["output-path"];
                 }
             }
