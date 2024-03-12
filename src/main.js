@@ -33,10 +33,7 @@ async function processOutputPath(output, configPath, workspace) {
     }
 
     if (output === '') {
-        return {
-            path: "./",
-            resultsJSONFile: "./results.json"
-        }
+        output = "./";
     }
 
     if (resultsFileName === '') {
