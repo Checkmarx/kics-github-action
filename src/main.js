@@ -26,7 +26,14 @@ async function processOutputPath(output, configPath, workspace) {
 
         [config_type, content] = await fileAnalyzer(configPath, workspace);
         console.log(`Config type: ${config_type}`);
+        console.log(`Config content: ${content}`);
+
         if (config_type !== '') {
+            if ( content["output-path"] !== undefined && content["output-path"] !== '' ) {
+                if (!filepath.startsWith('/') && !filepath.startsWith('./') && !filepath.startsWith('../')) {
+                    content["output-path"] =  "/github/workspace" +  content["output-path"];
+                }
+            }
             output = content["output-path"] || output;
             resultsFileName = content["output-name"] || '';
         }
@@ -57,7 +64,7 @@ function readFileContent(filePath, workspace) {
         console.log(`Reading file: ${filePath}`);
         console.log(`Workspace: ${workspace}`);
         const path = filepath.join(workspace, filePath);
-        const stats = fs.statSync( path); // Use fs.statSync to get file stats synchronously
+        const stats = fs.statSync(path); // Use fs.statSync to get file stats synchronously
         if (!stats.isFile()) {
             throw new Error('Provided path is not a file.');
         }
@@ -76,29 +83,24 @@ async function fileAnalyzer(filePath, workspace) {
         console.log('Error analyzing file: Empty file content');
         return ['', {}];
     }
-    // Attempt to parse as JSON
+
     try {
         const jsonData = JSON.parse(fileContent);
         return ['json', jsonData];
     } catch (jsonError) {
-        // Attempt to parse as HCL
         try {
             const parsed = HCL.parse(fileContent);
             const jsonData = JSON.parse(parsed);
             return ['hcl', jsonData];
         } catch (hclErr) {
-            console.log(`Error analyzing file: ${hclErr}`);
-            // Attempt to parse as TOML
             try {
                 temp = toml.parse(fileContent);
                 return ['toml', temp];
             } catch (tomlErr) {
-                // Attempt to parse as YAML
                 try {
                     temp = yaml.load(fileContent);
                     return ['yaml', temp];
                 } catch (yamlErr) {
-                    console.log(`Error analyzing file: ${yamlErr}`);
                     console.log(`Error analyzing file: Invalid configuration file format`);
                     return ['', {}];
                 }
