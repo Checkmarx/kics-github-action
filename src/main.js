@@ -39,7 +39,7 @@ async function processOutputPath(output, configPath, workspace) {
     if (resultsFileName === '') {
         resultsFileName = filepath.join(output, "/results.json")
     } else {
-        resultsFileName = filepath.join(output, resultsFileName);
+        resultsFileName = filepath.join(workspace, resultsFileName);
     }
 
     return {
