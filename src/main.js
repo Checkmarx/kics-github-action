@@ -28,15 +28,6 @@ async function processOutputPath(output, configPath, workspace) {
         console.log(`Config type: ${config_type}`);
 
         if (config_type !== '') {
-            console.log(`Config content: ${JSON.stringify(content)}`);
-            console.log(`Output path: ${content["output-path"]}`);
-            if ( content["output-path"] !== undefined && content["output-path"] !== '' ) {
-                const filePath = content["output-path"]
-                if (!filePath.startsWith('/') && !filePath.startsWith('./') && !filePath.startsWith('../')) {
-                    content["output-path"] =  "/github/workspace/" +  content["output-path"];
-                }
-            }
-            output = content["output-path"] || output;
             resultsFileName = content["output-name"] || '';
         }
     }
@@ -131,8 +122,6 @@ async function main() {
     let enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
-    console.log("Output Path: ", process.env.INPUT_OUTPUT_PATH)
-    console.log("Config Path: ", process.env.INPUT_CONFIG_PATH)
     const outputPath = await processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_CONFIG_PATH, "/github/workspace");
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
