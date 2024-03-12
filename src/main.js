@@ -26,9 +26,10 @@ async function processOutputPath(output, configPath, workspace) {
 
         [config_type, content] = await fileAnalyzer(configPath, workspace);
         console.log(`Config type: ${config_type}`);
-        console.log(`Config content: ${content}`);
 
         if (config_type !== '') {
+            console.log(`Config content: ${JSON.stringify(content)}`);
+            console.log(`Output path: ${content["output-path"]}`);
             if ( content["output-path"] !== undefined && content["output-path"] !== '' ) {
                 const filePath = content["output-path"]
                 if (!filePath.startsWith('/') && !filePath.startsWith('./') && !filePath.startsWith('../')) {
