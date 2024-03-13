@@ -26,10 +26,15 @@ async function processOutputPath(output, configPath) {
     if (configPath !== '' ) {
 
         [config_type, content] = await fileAnalyzer(configPath, workspace);
-        console.log(`Config type: ${config_type}`);
 
         if (config_type !== '') {
             resultsFileName = content["output-name"] || '';
+            if (resultsFileName !== '') {
+                // if the output file name does not have an extension, add .json
+                if (!resultsFileName.includes('.')) {
+                    resultsFileName = resultsFileName + ".json";
+                }
+            }
         }
     }
 
