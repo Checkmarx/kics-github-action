@@ -1,4 +1,4 @@
-FROM checkmarx/kics:gh-action-kics1.7
+FROM checkmarx/kics:gh-action-kics2.0
 
 COPY ./entrypoint.sh /entrypoint.sh
 
