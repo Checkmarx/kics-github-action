@@ -29,14 +29,13 @@ jobs:
   testAction:
     runs-on: ubuntu-latest
     steps:
-      steps:
-        - uses: actions/checkout@v3
-        - name: run kics Scan
-          uses: checkmarx/kics-github-action_release_test
-          with:
-            path: 'terraform'
-            ignore_on_exit: results
-            output_path: myResults/
-        - name: display kics results
-          run: |
-            cat myResults/results.json
+      - uses: actions/checkout@v3
+      - name: run kics Scan
+        uses: checkmarx/kics-github-action_release_test
+        with:
+          path: 'terraform'
+          ignore_on_exit: results
+          output_path: myResults/
+      - name: display kics results
+        run: |
+          cat myResults/results.json
