@@ -26,3 +26,17 @@ jobs:
           excluded_column_for_comments_with_queries: "description_id,similarity_id,search_line,search_value,cis_description_id,cis_description_title,cis_description_text,cloud_provider"
       - run: ls -la && ls -la myoutput
         if: always()
+  testAction:
+    runs-on: ubuntu-latest
+    steps:
+      steps:
+        - uses: actions/checkout@v3
+        - name: run kics Scan
+          uses: checkmarx/kics-github-action_release_test
+          with:
+            path: 'terraform'
+            ignore_on_exit: results
+            output_path: myResults/
+        - name: display kics results
+          run: |
+            cat myResults/results.json
