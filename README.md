@@ -63,13 +63,13 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <img alt="Azure BluePrints" src="images/logo-azure-blueprints.png" width="100">&nbsp;&nbsp;&nbsp;
 <img alt="GitHub Workflows" src="images/logo-github-icon.png" width="100">&nbsp;&nbsp;&nbsp;
 <img alt="OpenTofu" src="images/logo-opentofu.png" width="150">&nbsp;&nbsp;&nbsp;
+<img alt="NIFCloud" src="images/logo-nifcloud.png" width="110">&nbsp;&nbsp;&nbsp;
 
 #### Beta Features
 <img alt="Databricks" src="images/logo-databricks.png" width="200">&nbsp;&nbsp;&nbsp;
-<img alt="NIFCloud" src="images/logo-nifcloud.png" width="110">&nbsp;&nbsp;&nbsp;
 <img alt="TencentCloud" src="images/logo-tencentcloud.png" width="180">&nbsp;&nbsp;&nbsp;
 
-In order to run the Databricks, NIFCloud and TencentCloud queries, use the `--experimental-queries` flag when running KICS.
+In order to run the Databricks and TencentCloud queries, use the `--experimental-queries` flag when running KICS.
 
 Official documentation page <a href="https://docs.kics.io">docs.kics.io</a>
 
@@ -121,7 +121,7 @@ Ensure that you're using the <a href="https://github.com/Checkmarx/kics-github-a
     - uses: actions/checkout@v3
     # Scan Iac with kics
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v2.1.0
+      uses: checkmarx/kics-github-action@v2.1.3
       with:
         # scanning two directories: ./terraform/ ./cfn-templates/ plus a single file
         path: 'terraform,cfn-templates,my-other-sub-folder/Dockerfile'
@@ -144,7 +144,7 @@ If you want KICS to ignore the results and return exit status code 0 unless a KI
     steps:
     - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v2.1.0
+      uses: checkmarx/kics-github-action@v2.1.3
       with:
         path: 'terraform'
         ignore_on_exit: results
@@ -162,7 +162,7 @@ If want your pipeline just to fail on HIGH and MEDIUM severity results and KICS 
     steps:
     - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v2.1.0
+      uses: checkmarx/kics-github-action@v2.1.3
       with:
         path: 'terraform,my-other-sub-folder/Dockerfile'
         fail_on: high,medium
@@ -188,7 +188,7 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: run kics Scan
-      uses: checkmarx/kics-github-action@v2.1.0
+      uses: checkmarx/kics-github-action@v2.1.3
       with:
         path: test/samples/positive1.tf,test/samples/positive2.tf
         token: ${{ secrets.GITHUB_TOKEN }}
@@ -202,7 +202,7 @@ jobs:
 
 <img alt="KICS Logo" src="https://user-images.githubusercontent.com/111127232/203838108-ad537fea-4573-495a-9619-18500ee81dd9.png">
 
-**KICS version: 1.6.0**
+**KICS version: 2.1.3**
 
 <table>
 <tr></tr>
@@ -247,7 +247,7 @@ You can only enable one profiler at a time, CPU or MEM.
     steps:
       - uses: actions/checkout@v3
       - name: run kics Scan
-        uses: checkmarx/kics-github-action@v2.1.0
+        uses: checkmarx/kics-github-action@v2.1.3
         with:
           path: 'terraform'
           profiling: MEM
@@ -278,7 +278,7 @@ jobs:
         # make sure results dir is created
         run: mkdir -p results-dir
       - name: Run KICS Scan with SARIF result
-        uses: checkmarx/kics-github-action@v2.1.0
+        uses: checkmarx/kics-github-action@v2.1.3
         with:
           path: 'terraform'
           # when provided with a directory on output_path
@@ -344,7 +344,7 @@ jobs:
           }
           EOF
       - name: Run KICS Scan using config
-        uses: checkmarx/kics-github-action@v2.1.0
+        uses: checkmarx/kics-github-action@v2.1.3
         with:
           path: 'terraform'
           config_path: ./kics.config
