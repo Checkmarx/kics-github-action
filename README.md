@@ -13,6 +13,7 @@
   - [Workflow failures](#workflow-failures)
     - [Don't fail on results](#dont-fail-on-results)
     - [Fail by severity usage example](#fail-by-severity-usage-example)
+    - [Fail by severity threshold usage example](#fail-by-severity-threshold-usage-example)
   - [Enabling Pull Request Comment](#enabling-pull-request-comment)
     - [PR Comment Example](#pr-comment-example)
   - [Annotations](#annotations)
@@ -87,6 +88,7 @@ Ensure that you're using the <a href="https://github.com/Checkmarx/kics-github-a
 | path                                      | terraform/main.tf,Dockerfile                           | paths to a file or directories to scan, comma separated list                                                                                                | String  | Yes      | N/A                                                    |
 | ignore_on_exit                            | results                                                | defines which non-zero exit codes should be ignored (all, results, errors, none)                                                                            | String  | No       | none                                                   |
 | fail_on                                   | high,medium                                            | comma separated list of which severities returns exit code !=0                                                                                              | String  | No       | high,medium,low,info                                   |
+| fail_on_threshold                         | high>2,low<5                                           | comma separated list of severity[operator]value pairs. Supported operators: >, <, >=, <=. Example: 'high>2,low<5' means fail if high > 2 or low < 5.                   | Map     | No       | N/A                                                    |
 | timeout                                   | 75                                                     | number of seconds the query has to execute before being canceled                                                                                            | String  | No       | 60                                                     |
 | profiling                                 | CPU                                                    | turns on profiler that prints resource consumption in the logs during the execution (CPU, MEM)                                                              | String  | No       | N/A                                                    |
 | config_path                               | ./kics.config                                          | path to configuration file                                                                                                                                  | String  | No       | N/A                                                    |
@@ -171,6 +173,32 @@ If want your pipeline just to fail on HIGH and MEDIUM severity results and KICS 
       run: |
         cat myResults/results.json
 ```
+
+### Fail by severity threshold usage example
+
+If you want your pipeline to fail only if the number of HIGH severity issues is greater than 2, or LOW severity issues is less than 5:
+
+```yaml
+    steps:
+    - uses: actions/checkout@v3
+    - name: run kics Scan
+      uses: checkmarx/kics-github-action@v2.1.11
+      with:
+        path: 'terraform,my-other-sub-folder/Dockerfile'
+        fail_on_threshold: 'high>2,low<5'
+        output_path: myResults/
+    - name: display kics results
+      run: |
+        cat myResults/results.json
+```
+
+Supported operators:
+- `>`: greater than
+- `<`: less than
+- `>=`: greater than or equal to
+- `<=`: less than or equal to
+
+If `fail_on_threshold` is not provided, the action will use the default exit code logic and behave as before.
 
 ## Enabling Pull Request Comment
 
