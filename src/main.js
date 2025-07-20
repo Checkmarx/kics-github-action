@@ -44,8 +44,7 @@ function setWorkflowStatus(statusCode, results, failOnThreshold) {
                 if ((rule.op === 'gt' && count > rule.value) ||
                     (rule.op === 'lt' && count < rule.value) ||
                     (rule.op === 'gte' && count >= rule.value) ||
-                    (rule.op === 'lte' && count <= rule.value) ||
-                    (rule.op === 'eq' && count === rule.value)) {
+                    (rule.op === 'lte' && count <= rule.value)) {
                     console.log(`Failing workflow: ${severity} issues (${count}) ${rule.op} ${rule.value}`);
                     failed = true;
                 }
@@ -53,6 +52,9 @@ function setWorkflowStatus(statusCode, results, failOnThreshold) {
         }
         if (failed) {
             core.setFailed(`KICS scan failed due to fail_on_threshold: ${JSON.stringify(failOnThreshold)}`);
+            return;
+        } else {
+            // If fail_on_threshold is set and not triggered, always pass
             return;
         }
     }
