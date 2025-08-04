@@ -1,5 +1,6 @@
 const commenter = require("./commenter");
 const annotator = require("./annotator");
+const filter = require("./filter");
 const core = require("@actions/core");
 const github = require("@actions/github");
 const io = require("@actions/io");
@@ -50,6 +51,7 @@ async function main() {
     let enableAnnotations = process.env.INPUT_ENABLE_ANNOTATIONS;
     let enableComments = process.env.INPUT_ENABLE_COMMENTS;
     let enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
+    let enableDiffAwareReporting = process.env.INPUT_ENABLE_DIFF_AWARE_REPORTING;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
     const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH);
@@ -75,8 +77,14 @@ async function main() {
         enableAnnotations = enableAnnotations ? enableAnnotations : "false"
         enableComments = enableComments ? enableComments : "false"
         enableJobsSummary = enableJobsSummary ? enableJobsSummary : "false"
+        enableDiffAwareReporting = enableDiffAwareReporting ? enableDiffAwareReporting : "false"
 
-        const parsedResults = readJSON(outputPath.resultsJSONFile);
+        let parsedResults = readJSON(outputPath.resultsJSONFile);
+        
+        if (enableDiffAwareReporting.toLocaleLowerCase() === "true" && prNumber) {
+            parsedResults = await filter.applyDiffAwareFiltering(parsedResults, octokit, repo, prNumber);
+        }
+        
         if (enableAnnotations.toLocaleLowerCase() === "true") {
             annotator.annotateChangesWithResults(parsedResults);
         }
