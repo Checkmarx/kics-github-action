@@ -80,9 +80,16 @@ async function main() {
         enableDiffAwareReporting = enableDiffAwareReporting ? enableDiffAwareReporting : "false"
 
         let parsedResults = readJSON(outputPath.resultsJSONFile);
+        let finalExitCode = exitCode;
         
         if (enableDiffAwareReporting.toLocaleLowerCase() === "true" && prNumber) {
             parsedResults = await filter.applyDiffAwareFiltering(parsedResults, octokit, repo, prNumber);
+            
+            // If diff-aware filtering resulted in zero findings, override exit code to success
+            if (parsedResults.total_counter === 0) {
+                console.log("Diff-aware filtering resulted in zero findings. Setting workflow status to success.");
+                finalExitCode = "0";
+            }
         }
         
         if (enableAnnotations.toLocaleLowerCase() === "true") {
@@ -95,7 +102,7 @@ async function main() {
             await commenter.postJobSummary(parsedResults, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
         }
 
-        setWorkflowStatus(exitCode);
+        setWorkflowStatus(finalExitCode);
         cleanupOutput(outputPath.resultsJSONFile, outputFormats);
     } catch (e) {
         console.error(e);
