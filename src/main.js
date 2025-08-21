@@ -96,12 +96,7 @@ async function main() {
             annotator.annotateChangesWithResults(parsedResults);
         }
         if (enableComments.toLocaleLowerCase() === "true") {
-            // Skip posting comment if diff-aware reporting is enabled and no findings in changed files
-            if (enableDiffAwareReporting.toLocaleLowerCase() === "true" && parsedResults.total_counter === 0) {
-                console.log("Diff-aware reporting: No findings in changed files, skipping PR comment");
-            } else {
-                await commenter.postPRComment(parsedResults, repo, prNumber, octokit, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
-            }
+            await commenter.postPRComment(parsedResults, repo, prNumber, octokit, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
         }
         if (enableJobsSummary.toLocaleLowerCase() === "true") {
             await commenter.postJobSummary(parsedResults, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
