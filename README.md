@@ -110,6 +110,7 @@ Ensure that you're using the <a href="https://github.com/Checkmarx/kics-github-a
 | secrets_regexes_path                      | ./mydir/secrets-config.json                            | path to custom secrets regex rules configuration file                                                                                                       | String  | No       | N/A                                                    |
 | libraries_path                            | ./myLibsDir                                            | path to directory with Rego libraries                                                                                                                       | String  | No       | N/A                                                    |
 | cloud_provider                            | aws,azure                                            | list of cloud providers to scan (alicloud, aws, azure, gcp)                                                                                                                       | String  | No       | N/A                                                    |
+| enable_diff_aware_reporting               | true                                                 | Enable diff-aware reporting for pull requests (only report findings in changed files/lines)                                                                                       | Boolean | No       | false                                                  |
 
 
 ## Simple usage example
