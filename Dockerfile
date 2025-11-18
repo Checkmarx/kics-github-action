@@ -1,4 +1,4 @@
-FROM checkmarx/kics:v2.1.15 as kics-env
+FROM checkmarx/kics:v2.1.16 as kics-env
  
 FROM cgr.dev/chainguard/wolfi-base:latest
  
