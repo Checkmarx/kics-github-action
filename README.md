@@ -37,13 +37,13 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <table align="center"><tr>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-terraform.png" alt="Terraform" width="120" />
+<source media="(prefers-color-scheme: light)" srcset="images/logo-terraform.png" />
 <img src="images/logo-terraform.png" alt="Terraform" width="120" />
 </picture>
 </td>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-k8s.png" width="160">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-k8s.png">
 <img alt="Kubernetes" src="images/logo-k8s.png" width="160">
 </picture>
 </td>
@@ -54,19 +54,19 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <table align="center"><tr>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-cf.png" width="150">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-cf.png">
 <img alt="CloudFormation" src="images/logo-cf.png" width="150">
 </picture>
 </td>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-ansible.png" width="150">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-ansible.png">
 <img alt="Ansible" src="images/logo-ansible.png" width="150">
 </picture>
 </td>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-helm.png" width="60">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-helm.png">
 <img alt="Helm" src="images/logo-helm.png" width="60">
 </picture>
 </td>
@@ -74,13 +74,13 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <table align="center"><tr>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-openapi.png" width="185">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-openapi.png">
 <img alt="OpenAPI" src="images/logo-openapi.png" width="185">
 </picture>
 </td>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-grpc.png" width="135">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-grpc.png">
 <img alt="gRPC" src="images/logo-grpc.png" width="135">
 </picture>
 </td>
@@ -94,7 +94,7 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <table align="center"><tr>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-cdk.png" width="175">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-cdk.png">
 <img alt="Cloud Development Kit" src="images/logo-cdk.png" width="175">
 </picture>
 </td>
@@ -111,19 +111,19 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <table align="center"><tr>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-crossplane.png" width="165">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-crossplane.png">
 <img alt="Crossplane" src="images/logo-crossplane.png" width="165">
 </picture>
 </td>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-pulumi.png" width="145">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-pulumi.png">
 <img alt="Pulumi" src="images/logo-pulumi.png" width="145">
 </picture>
 </td>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-serverlessfw.png" width="170">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-serverlessfw.png">
 <img alt="ServerlessFW" src="images/logo-serverlessfw.png" width="170">
 </picture>
 </td>
@@ -137,7 +137,7 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 </td>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-opentofu.png" width="160">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-opentofu.png">
 <img alt="OpenTofu" src="images/logo-opentofu.png" width="160">
 </picture>
 </td>
@@ -149,13 +149,13 @@ It is as simple as running a CLI tool, making it easy to integrate into any proj
 <table align="center"><tr>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-databricks.png" width="200">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-databricks.png">
 <img alt="Databricks" src="images/logo-databricks.png" width="200">
 </picture>
 </td>
 <td>
 <picture>
-<source media="(prefers-color-scheme: light)" srcset="images/logo-tencentcloud.png" width="180">
+<source media="(prefers-color-scheme: light)" srcset="images/logo-tencentcloud.png">
 <img alt="TencentCloud" src="images/logo-tencentcloud.png" width="180">
 </picture>
 </td>
