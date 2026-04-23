@@ -125,7 +125,7 @@ runs:
     - ${{ inputs.fail_on }}
     - ${{ inputs.timeout }}
     - ${{ inputs.profiling }}
-    - ${{ inputs.config }}
+    - ${{ inputs.config_path }}
     - ${{ inputs.platform_type }}
     - ${{ inputs.exclude_paths }}
     - ${{ inputs.exclude_queries }}
