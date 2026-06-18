@@ -18,17 +18,18 @@ function cleanupOutput(resultsJSONFile, outputFormats) {
     }
 }
 
-function processOutputPath(output) {
+function processOutputPath(output, outputName) {
+    const resultsFilename = outputName || "results";
     if (output === '') {
         return {
             path: "./",
-            resultsJSONFile: "./results.json"
+            resultsJSONFile: `./${resultsFilename}.json`
         }
     }
 
     return {
         path: output,
-        resultsJSONFile: filepath.join(output, "/results.json")
+        resultsJSONFile: filepath.join(output, `/${resultsFilename}.json`)
     }
 }
 
@@ -52,7 +53,7 @@ async function main() {
     let enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
-    const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH);
+    const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_OUTPUT_NAME);
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
 
