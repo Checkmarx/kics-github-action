@@ -140,8 +140,7 @@ async function postPRComment(results, repo, prNumber, octokit, commentWithQuerie
 
     const comment = comments.find((comment) => {
         return (
-            comment.user.login === "github-actions[bot]" &&
-            comment.body.startsWith("![kics-logo](")
+            comment.body?.startsWith("![kics-logo](")
         );
     });
 
