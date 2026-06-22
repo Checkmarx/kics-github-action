@@ -35,6 +35,10 @@ inputs:
   fail_on:
     description: "comma separated list of which severities returns exit code !=0"
     required: false
+  fail_on_threshold:
+    description: "Comma separated list of severity[operator]value pairs. Supported operators: >, <, >=, <=. Example: high>2,low<5 means fail if high > 2 or low < 5."
+    required: false
+    default: ""
   timeout:
     description: "number of seconds the query has to execute before being canceled"
     required: false
