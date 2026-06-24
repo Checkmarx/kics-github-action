@@ -5,11 +5,13 @@ const github = require("@actions/github");
 const io = require("@actions/io");
 const filepath = require('path');
 const fs = require("fs");
+const yaml = require('js-yaml');
+const HCL = require("js-hcl-parser")
+const toml = require('@iarna/toml');
 
 function readJSON(filename) {
-    const rawdata = fs.readFileSync(filename);
-    const parsedJSON = JSON.parse(rawdata.toString());
-    return parsedJSON;
+    const rawData = fs.readFileSync(filename);
+    return JSON.parse(rawData.toString());
 }
 
 function cleanupOutput(resultsJSONFile, outputFormats) {
@@ -18,17 +20,88 @@ function cleanupOutput(resultsJSONFile, outputFormats) {
     }
 }
 
-function processOutputPath(output) {
-    if (output === '') {
-        return {
-            path: "./",
-            resultsJSONFile: "./results.json"
+async function processOutputPath(output, configPath) {
+    const workspace = "/github/workspace"
+    let resultsFileName = '';
+    if (configPath !== '' ) {
+
+        [config_type, content] = await fileAnalyzer(configPath, workspace);
+
+        if (config_type !== '') {
+            resultsFileName = content["output-name"] || '';
+            if (resultsFileName !== '') {
+                // if the output file name does not have an extension, add .json
+                if (!resultsFileName.includes('.')) {
+                    resultsFileName = resultsFileName + ".json";
+                }
+            }
         }
+    }
+
+    if (output === '') {
+        output = "./";
+    }
+
+    if (resultsFileName === '') {
+        resultsFileName = filepath.join(output, "/results.json")
+    } else {
+        resultsFileName = filepath.join(workspace, resultsFileName);
     }
 
     return {
         path: output,
-        resultsJSONFile: filepath.join(output, "/results.json")
+        resultsJSONFile: resultsFileName
+    }
+}
+
+function readFileContent(filePath, workspace) {
+    try {
+        // read file content
+        console.log(`Reading file: ${filePath}`);
+        console.log(`Workspace: ${workspace}`);
+        const path = filepath.join(workspace, filePath);
+        const stats = fs.statSync(path); // Use fs.statSync to get file stats synchronously
+        if (!stats.isFile()) {
+            throw new Error('Provided path is not a file.');
+        }
+        const data = fs.readFileSync(path, 'utf8'); // Use fs.readFileSync to read file content synchronously
+        return data;
+    } catch (error) {
+        console.error('Error reading file:', error);
+        return ''; // Return empty string or handle the error as needed
+    }
+}
+async function fileAnalyzer(filePath, workspace) {
+    const fileContent = await readFileContent(filePath, workspace);
+    let temp = {};
+
+    if (fileContent === '') {
+        console.log('Error analyzing file: Empty file content');
+        return ['', {}];
+    }
+
+    try {
+        const jsonData = JSON.parse(fileContent);
+        return ['json', jsonData];
+    } catch (jsonError) {
+        try {
+            const parsed = HCL.parse(fileContent);
+            const jsonData = JSON.parse(parsed);
+            return ['hcl', jsonData];
+        } catch (hclErr) {
+            try {
+                temp = toml.parse(fileContent);
+                return ['toml', temp];
+            } catch (tomlErr) {
+                try {
+                    temp = yaml.load(fileContent);
+                    return ['yaml', temp];
+                } catch (yamlErr) {
+                    console.log(`Error analyzing file: Invalid configuration file format`);
+                    return ['', {}];
+                }
+            }
+        }
     }
 }
 
@@ -52,10 +125,11 @@ async function main() {
     let enableJobsSummary = process.env.INPUT_ENABLE_JOBS_SUMMARY;
     const commentsWithQueries = process.env.INPUT_COMMENTS_WITH_QUERIES;
     const excludedColumnsForCommentsWithQueries = process.env.INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES.split(',');
-    const outputPath = processOutputPath(process.env.INPUT_OUTPUT_PATH);
+    const outputPath = await processOutputPath(process.env.INPUT_OUTPUT_PATH, process.env.INPUT_CONFIG_PATH);
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
 
+    console.log("Output Path: ", outputPath);
     try {
         const octokit = github.getOctokit(githubToken);
         let context = {};
