@@ -86,8 +86,4 @@ cp -r "${CP_PATH}" "/app/"
 
 cd /app
 
-# install and run nodejs
-apk add --update nodejs npm
-npm ci
-npm run build --if-present
 node dist/index.js
