@@ -3,7 +3,8 @@ FROM node:20-alpine@sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb836
 WORKDIR /build
 
 COPY package.json package-lock.json ./
-RUN npm ci
+# Optional npmrc secret, only used on runners that cannot reach registry.npmjs.org directly
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc,required=false npm ci
 
 COPY src ./src
 RUN npm run build
