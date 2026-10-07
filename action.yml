@@ -18,6 +18,10 @@ inputs:
     required: false
     default: "false"
     description: "Enable report as jobs summary"
+  enable_diff_aware_reporting:
+    required: false
+    default: "false"
+    description: "Enable diff-aware reporting for pull requests (only report findings in changed files/lines)"
   comments_with_queries:
     required: false
     default: "false"
@@ -116,6 +120,7 @@ runs:
     INPUT_ENABLE_ANNOTATIONS: ${{ inputs.enable_annotations }}
     INPUT_ENABLE_COMMENTS: ${{ inputs.enable_comments }}
     INPUT_ENABLE_JOBS_SUMMARY: ${{ inputs.enable_jobs_summary }}
+    INPUT_ENABLE_DIFF_AWARE_REPORTING: ${{ inputs.enable_diff_aware_reporting }}
     INPUT_COMMENTS_WITH_QUERIES: ${{ inputs.comments_with_queries }}
     INPUT_EXCLUDED_COLUMNS_FOR_COMMENTS_WITH_QUERIES: ${{ inputs.excluded_column_for_comments_with_queries }}
     INPUT_OUTPUT_FORMATS: ${{ inputs.output_formats }}
