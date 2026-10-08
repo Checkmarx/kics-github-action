@@ -467,7 +467,8 @@ Tests live under `test/`:
 - `test/e2e` - the action run as a workflow would run it: `src/main.js` as a process, `entrypoint.sh` against a fake `kics`, and the `action.yml` contract
 - `test/helpers` and `test/fixtures` - the fake GitHub API, KICS report builders and process runners
 
-Tests marked `todo` document known bugs and are expected to fail until the bug is fixed.
+Tests marked with `knownBug` document known bugs: they are reported as `todo` and are expected to fail until the bug is fixed.
+They are skipped in the coverage run, so coverage only counts verified behaviour.
 
 # License
 

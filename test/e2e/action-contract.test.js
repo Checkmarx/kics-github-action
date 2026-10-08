@@ -5,6 +5,7 @@ const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
 const { ROOT, loadManifest, runnerInputEnv } = require('../helpers/action-manifest')
+const { knownBug } = require('../helpers/known-bug')
 
 const { inputs, env } = loadManifest()
 const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8')
@@ -43,7 +44,7 @@ test('every declared input is used by the code', async (t) => {
     const viaEnvMapping = new Set(Object.entries(env).filter(([key]) => consumed.has(key)).map(([, input]) => input))
     for (const name of Object.keys(inputs)) {
         const used = consumed.has(`INPUT_${name.toUpperCase()}`) || viaEnvMapping.has(name)
-        const options = name in KNOWN_UNUSED_INPUTS ? { todo: KNOWN_UNUSED_INPUTS[name] } : {}
+        const options = name in KNOWN_UNUSED_INPUTS ? knownBug(KNOWN_UNUSED_INPUTS[name]) : {}
         await t.test(name, options, () => assert.ok(used, `input "${name}" is declared but never read`))
     }
 })
