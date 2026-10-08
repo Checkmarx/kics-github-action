@@ -71,6 +71,9 @@ inputs:
   output_path:
     description: "directory to store results report"
     required: false
+  output_name:
+    description: "name for output results file"
+    required: false
   payload_path:
     description: "file path to store source internal representation in JSON format"
     required: false
@@ -113,6 +116,7 @@ runs:
   env:
     INPUT_TOKEN: ${{ inputs.token }}
     INPUT_OUTPUT_PATH: ${{ inputs.output_path }}
+    INPUT_OUTPUT_NAME: ${{ inputs.output_name }}
     INPUT_ENABLE_ANNOTATIONS: ${{ inputs.enable_annotations }}
     INPUT_ENABLE_COMMENTS: ${{ inputs.enable_comments }}
     INPUT_ENABLE_JOBS_SUMMARY: ${{ inputs.enable_jobs_summary }}
@@ -136,6 +140,7 @@ runs:
     - ${{ inputs.exclude_gitignore}}
     - ${{ inputs.output_formats }}
     - ${{ inputs.output_path }}
+    - ${{ inputs.output_name }}
     - ${{ inputs.payload_path }}
     - ${{ inputs.queries }}
     - ${{ inputs.verbose }}
