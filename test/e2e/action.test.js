@@ -5,6 +5,7 @@ const assert = require('node:assert/strict')
 const { runAction } = require('../helpers/run-action')
 const { startFakeGitHub, humanComment } = require('../helpers/fake-github')
 const { kicsResults, query, finding } = require('../helpers/fixtures')
+const { knownBug } = require('../helpers/known-bug')
 
 const KICS_FOUND_RESULTS = '50'
 
@@ -73,7 +74,7 @@ test('pull request comment', async (t) => {
         assert.match(fake.comments[0].body, /### Queries Results/)
     })
 
-    await t.test('is skipped without failing the step when not running for a pull request', { todo: 'on push events prNumber is "", so the action calls /issues//comments, gets a 404 and swallows it' }, async (t) => {
+    await t.test('is skipped without failing the step when not running for a pull request', knownBug('on push events prNumber is "", so the action calls /issues//comments, gets a 404 and swallows it'), async (t) => {
         const fake = await startFakeGitHub(t)
         const run = await runAction(t, { results: kicsResults(), inputs: { enable_comments: 'true' }, apiUrl: fake.url, event: 'push' })
         assert.equal(run.code, 0)
@@ -164,19 +165,19 @@ test('workflow status follows the KICS exit code', async (t) => {
         assert.equal(run.warnings.length, 4, 'annotations emitted')
     })
 
-    await t.test('fails when KICS fails and the PR comment cannot be posted', { todo: SILENT_FAILURE }, async (t) => {
+    await t.test('fails when KICS fails and the PR comment cannot be posted', knownBug(SILENT_FAILURE), async (t) => {
         const fake = await startFakeGitHub(t, { failWith: 500 })
         const run = await runAction(t, { results: kicsResults(), kicsExitCode: KICS_FOUND_RESULTS, inputs: { enable_comments: 'true' }, apiUrl: fake.url })
         assert.equal(run.code, 1, 'a GitHub API outage must not turn a failed scan into a green build')
     })
 
-    await t.test('fails when KICS failed and wrote no results.json', { todo: SILENT_FAILURE }, async (t) => {
+    await t.test('fails when KICS failed and wrote no results.json', knownBug(SILENT_FAILURE), async (t) => {
         const run = await runAction(t, { kicsExitCode: '126' })
         assert.equal(run.code, 1, run.stdout + run.stderr)
         assert.ok(run.errors.length > 0)
     })
 
-    await t.test('reports a missing results.json instead of passing silently', { todo: SILENT_FAILURE }, async (t) => {
+    await t.test('reports a missing results.json instead of passing silently', knownBug(SILENT_FAILURE), async (t) => {
         const run = await runAction(t, { kicsExitCode: '0', inputs: { enable_comments: 'true' } })
         assert.notEqual(run.code, 0, 'the scan produced no report, which is not a success')
     })

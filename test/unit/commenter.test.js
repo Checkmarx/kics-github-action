@@ -8,6 +8,7 @@ const path = require('node:path')
 const { postPRComment, postJobSummary } = require('../../src/commenter')
 const { startFakeGitHub, humanComment, MAX_COMMENT_LENGTH } = require('../helpers/fake-github')
 const { kicsResults, query, finding } = require('../helpers/fixtures')
+const { knownBug } = require('../helpers/known-bug')
 
 const repo = { owner: 'o', repo: 'r' }
 const PR = 1
@@ -15,7 +16,7 @@ const COMMENTS_PATH = '/repos/o/r/issues/1/comments'
 const kicsBody = '![kics-logo](https://example.com/logo.png)\nold report'
 const noExclusions = []
 
-// Pending fix: PR #163 (fix-duplicated-comment). Remove the `todo` once it is merged.
+// Pending fix: PR #163 (fix-duplicated-comment). Remove the `knownBug` markers once it is merged.
 const PR_163 = 'PR #163: comment lookup must paginate and match on the KICS marker, not the author'
 
 async function post(fake, results = kicsResults(), { withQueries = false, excluded = noExclusions, prNumber = PR } = {}) {
@@ -80,7 +81,7 @@ test('PR comment lifecycle', async (t) => {
 })
 
 test('finding the existing KICS comment in a busy thread', async (t) => {
-    await t.test('updates it when buried past the first 30 comments', { todo: PR_163 }, async (t) => {
+    await t.test('updates it when buried past the first 30 comments', knownBug(PR_163), async (t) => {
         const comments = Array.from({ length: 40 }, (_, i) => humanComment(i))
         comments.push({ id: 1000, user: { login: 'github-actions[bot]' }, body: kicsBody })
         const fake = await startFakeGitHub(t, { comments })
@@ -91,7 +92,7 @@ test('finding the existing KICS comment in a busy thread', async (t) => {
         assert.ok(!fake.calls().some((c) => c.startsWith('POST')), 'must not create a duplicate')
     })
 
-    await t.test('updates it when it is on page 3 of 100+ comments per page', { todo: PR_163 }, async (t) => {
+    await t.test('updates it when it is on page 3 of 100+ comments per page', knownBug(PR_163), async (t) => {
         const comments = Array.from({ length: 250 }, (_, i) => humanComment(i))
         comments.push({ id: 1000, user: { login: 'github-actions[bot]' }, body: kicsBody })
         const fake = await startFakeGitHub(t, { comments })
@@ -103,13 +104,13 @@ test('finding the existing KICS comment in a busy thread', async (t) => {
         assert.ok(fake.requests.filter((r) => r.method === 'GET').length <= 3, 'lists 100 comments per page, not 30')
     })
 
-    await t.test('updates it when it was posted by an author other than github-actions[bot]', { todo: PR_163 }, async (t) => {
+    await t.test('updates it when it was posted by an author other than github-actions[bot]', knownBug(PR_163), async (t) => {
         const fake = await startFakeGitHub(t, { comments: [{ id: 5, user: { login: 'my-app[bot]' }, body: kicsBody }] })
         await post(fake)
         assert.deepEqual(fake.writes().map((r) => `${r.method} ${r.path}`), ['PATCH /repos/o/r/issues/comments/5'])
     })
 
-    await t.test('updates the oldest KICS comment when duplicates already exist', { todo: PR_163 }, async (t) => {
+    await t.test('updates the oldest KICS comment when duplicates already exist', knownBug(PR_163), async (t) => {
         const fake = await startFakeGitHub(t, {
             comments: [
                 { id: 10, user: { login: 'someone' }, body: kicsBody },
@@ -128,7 +129,7 @@ test('GitHub comment size limit', async (t) => {
         assert.ok(postedBody(fake).length < MAX_COMMENT_LENGTH)
     })
 
-    await t.test('a huge report with queries still gets posted', { todo: 'GitHub rejects bodies over 65536 characters with 422; the report must be truncated or split' }, async (t) => {
+    await t.test('a huge report with queries still gets posted', knownBug('GitHub rejects bodies over 65536 characters with 422; the report must be truncated or split'), async (t) => {
         const fake = await startFakeGitHub(t)
         const many = Array.from({ length: 400 }, (_, i) => finding({ file_name: `modules/service-${i}/main.tf`, line: i + 1 }))
         const results = kicsResults({ queries: [query({ files: many })] })
@@ -240,13 +241,13 @@ test('report content with queries', async (t) => {
         assert.equal(columns(rows[1]), columns(header))
     })
 
-    await t.test('keeps a multi-line value inside its table cell', { todo: 'only the first newline is replaced, so a second one breaks the markdown table' }, async (t) => {
+    await t.test('keeps a multi-line value inside its table cell', knownBug('only the first newline is replaced, so a second one breaks the markdown table'), async (t) => {
         const multiline = finding({ actual_value: 'line one\nline two\nline three' })
         const { lines } = await withQueries(t, kicsResults({ queries: [query({ files: [multiline] })] }))
         assert.ok(lines.every((l) => l.startsWith('|')), `stray lines outside the table:\n${lines.join('\n')}`)
     })
 
-    await t.test('keeps a value containing a pipe inside its table cell', { todo: 'unescaped | in a value (e.g. a regex in search_value) shifts every following column' }, async (t) => {
+    await t.test('keeps a value containing a pipe inside its table cell', knownBug('unescaped | in a value (e.g. a regex in search_value) shifts every following column'), async (t) => {
         const piped = finding({ search_value: 'a|b' })
         const { header, rows } = await withQueries(t, kicsResults({ queries: [query({ files: [piped] })] }))
         const columns = (line) => line.replace(/\\\|/g, '').replace(/\|$/, '').split('|').length

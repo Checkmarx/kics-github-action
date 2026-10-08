@@ -7,6 +7,7 @@ const path = require('node:path')
 const { runEntrypoint, flagValue } = require('../helpers/run-entrypoint')
 const { startFakeGitHub } = require('../helpers/fake-github')
 const { kicsResults } = require('../helpers/fixtures')
+const { knownBug } = require('../helpers/known-bug')
 
 const DEFAULT_QUERIES = '/app/bin/assets/queries'
 
@@ -29,7 +30,7 @@ test('required input', async (t) => {
         assert.equal(flagValue(run.args, '-p'), 'terraform,modules')
     })
 
-    await t.test('keeps a path containing spaces as one argument', { todo: 'the unquoted $INPUT_PATH is word-split, so "my infra" becomes two arguments' }, async (t) => {
+    await t.test('keeps a path containing spaces as one argument', knownBug('the unquoted $INPUT_PATH is word-split, so "my infra" becomes two arguments'), async (t) => {
         const run = await runEntrypoint(t, { inputs: { path: 'my infra' } })
         assert.deepEqual(run.args.slice(run.args.indexOf('-p'), run.args.indexOf('-p') + 2), ['-p', 'my infra'])
     })
@@ -94,13 +95,13 @@ test('inputs mapped to KICS flags', async (t) => {
             assert.ok(!run.args.includes(flag))
         })
 
-        await t.test(`${input}: false -> no ${flag}`, { todo: 'any non-empty value, including "false", enables the flag (#121)' }, async (t) => {
+        await t.test(`${input}: false -> no ${flag}`, knownBug('any non-empty value, including "false", enables the flag (#121)'), async (t) => {
             const run = await runEntrypoint(t, { inputs: { [input]: 'false' } })
             assert.ok(!run.args.includes(flag), `${input}: false must not enable ${flag}: ${run.args.join(' ')}`)
         })
     }
 
-    await t.test('include_queries -> -i <ids>', { todo: 'the flag is built from $INPUT_PROFILING instead of $INPUT_INCLUDE_QUERIES (#98)' }, async (t) => {
+    await t.test('include_queries -> -i <ids>', knownBug('the flag is built from $INPUT_PROFILING instead of $INPUT_INCLUDE_QUERIES (#98)'), async (t) => {
         const run = await runEntrypoint(t, { inputs: { include_queries: '229588ef-8fde-40c8-8756-f4f2b5825ded' } })
         assert.equal(flagValue(run.args, '-i'), '229588ef-8fde-40c8-8756-f4f2b5825ded')
     })
@@ -110,7 +111,7 @@ test('inputs mapped to KICS flags', async (t) => {
         assert.ok(run.args.includes('-m'), run.args.join(' '))
     })
 
-    await t.test('bom and include_queries do not borrow the value of profiling', { todo: 'both flags are built from $INPUT_PROFILING (see #98)' }, async (t) => {
+    await t.test('bom and include_queries do not borrow the value of profiling', knownBug('both flags are built from $INPUT_PROFILING (see #98)'), async (t) => {
         const run = await runEntrypoint(t, { inputs: { bom: 'true', include_queries: 'q-1', profiling: 'CPU' } })
         assert.equal(flagValue(run.args, '--profiling'), 'CPU')
         assert.notEqual(flagValue(run.args, '-m'), 'CPU', 'bom is a switch, it takes no value')
@@ -197,7 +198,7 @@ test('whole action: entrypoint, KICS, JavaScript stage and GitHub', async (t) =>
         assert.doesNotMatch(run.stdout, /^::(warning|error)/m)
     })
 
-    await t.test('the workspace is left without a results.json nobody asked for', { todo: 'output_formats: sarif still leaves results.json in the workspace; main.js only removes the copy inside /app' }, async (t) => {
+    await t.test('the workspace is left without a results.json nobody asked for', knownBug('output_formats: sarif still leaves results.json in the workspace; main.js only removes the copy inside /app'), async (t) => {
         const run = await runEntrypoint(t, { runMain: true, results: kicsResults(), inputs: { output_formats: 'sarif' } })
         assert.equal(fs.existsSync(path.join(run.workspace, 'results.json')), false)
     })
