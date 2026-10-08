@@ -133,17 +133,13 @@ function computeHeaders(flattenedQueries) {
 async function postPRComment(results, repo, prNumber, octokit, commentWithQueries = false, excludedColumnsForCommentsWithQueries) {
     const message = createComment(results, commentWithQueries, excludedColumnsForCommentsWithQueries);
 
-    const {data: comments} = await octokit.rest.issues.listComments({
+    const comments = await octokit.paginate(octokit.rest.issues.listComments, {
         ...repo,
         issue_number: prNumber,
+        per_page: 100,
     });
 
-    const comment = comments.find((comment) => {
-        return (
-            comment.user.login === "github-actions[bot]" &&
-            comment.body.startsWith("![kics-logo](")
-        );
-    });
+    const comment = comments.find((comment) => comment.body?.startsWith("![kics-logo]("));
 
     if (comment) {
         await octokit.rest.issues.updateComment({
