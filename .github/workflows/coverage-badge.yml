@@ -1,0 +1,72 @@
+name: coverage-badge
+
+on:
+  push:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  coverage:
+    name: generate-coverage
+    runs-on: cx-public-ubuntu-x64
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+      # Runner cannot reach registry.npmjs.org; install through the echohq registry, as in test_action.yaml
+      - name: Install dependencies through echohq registry
+        env:
+          ECHO_LIBRARIES_ACCESS_KEY: ${{ secrets.ECHO_LIBRARIES_ACCESS_KEY }}
+        run: |
+          NPMRC="${RUNNER_TEMP}/npmrc"
+          umask 077
+          printf 'registry=https://npm.echohq.com/\n//npm.echohq.com/:_authToken=%s\n' "${ECHO_LIBRARIES_ACCESS_KEY}" > "${NPMRC}"
+          npm ci --ignore-scripts --userconfig "${NPMRC}"
+          rm -f "${NPMRC}"
+      - name: Run tests with coverage
+        run: npm run test:coverage
+      - name: Generate badge
+        run: node scripts/coverage-badge.js coverage/lcov.info coverage/badge.json
+      - name: Upload coverage badge Artifact
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: coverage-badge
+          path: coverage/badge.json
+
+  publish:
+    name: publish-coverage
+    needs: coverage
+    runs-on: cx-public-ubuntu-x64
+    timeout-minutes: 5
+    permissions:
+      contents: write # for git push to the badges branch
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: badges
+          persist-credentials: true
+      - name: Download Badge json
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          name: coverage-badge
+          path: latest-coverage
+      - name: Push badge to the badges branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mv latest-coverage/badge.json coverage.json
+          git add coverage.json
+          if ! git status | grep "nothing to commit"; then
+            git commit -m 'chore(tests): updating test coverage badge'
+            git push origin badges
+          fi

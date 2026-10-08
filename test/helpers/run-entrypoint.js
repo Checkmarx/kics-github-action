@@ -34,7 +34,9 @@ while [ $# -gt 0 ]; do
 done
 if [ -n "$FAKE_KICS_RESULTS" ]; then
   mkdir -p "$out"
-  cp "$FAKE_KICS_RESULTS" "$out/results.json"
+  file="$out/\${FAKE_KICS_NAME:-results}.json"
+  cp "$FAKE_KICS_RESULTS" "$file"
+  if [ -n "$FAKE_KICS_MODE" ]; then chmod "$FAKE_KICS_MODE" "$file"; fi
 fi
 exit "\${FAKE_KICS_EXIT:-0}"
 `
@@ -49,7 +51,7 @@ function write(file, content, mode) {
     fs.writeFileSync(file, content, { mode })
 }
 
-async function runEntrypoint(t, { inputs = {}, results, kicsExitCode = 0, runMain = false, apiUrl, workspaceFiles = {} } = {}) {
+async function runEntrypoint(t, { inputs = {}, results, kicsExitCode = 0, runMain = false, apiUrl, workspaceFiles = {}, resultsName, resultsMode } = {}) {
     const sandbox = fs.mkdtempSync(path.join(os.tmpdir(), 'kics-entrypoint-'))
     t.after(() => fs.rmSync(sandbox, { recursive: true, force: true }))
 
@@ -78,6 +80,8 @@ async function runEntrypoint(t, { inputs = {}, results, kicsExitCode = 0, runMai
         SANDBOX: sandbox,
         FAKE_KICS_RESULTS: resultsFile,
         FAKE_KICS_EXIT: String(kicsExitCode),
+        FAKE_KICS_NAME: resultsName ?? '',
+        FAKE_KICS_MODE: resultsMode ?? '',
         REAL_NODE: process.execPath,
         MAIN_JS,
     }

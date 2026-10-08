@@ -2,14 +2,11 @@ name: CI
 
 on:
   pull_request:
-  push:
-    branches:
-      - master
-  workflow_dispatch:
+    branches: [master]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -20,10 +17,10 @@ jobs:
     runs-on: cx-public-ubuntu-x64
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 #v7.1.0
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22
       # Runner cannot reach registry.npmjs.org; install through the echohq registry, as in test_action.yaml
@@ -38,65 +35,15 @@ jobs:
           rm -f "${NPMRC}"
       - name: Run tests with coverage
         run: npm run test:coverage
-      - name: Build coverage badge
-        run: |
-          PERCENT="$(node scripts/coverage-badge.js coverage/lcov.info coverage/badge.json)"
-          echo "### Line coverage: ${PERCENT}%" >> "${GITHUB_STEP_SUMMARY}"
-      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 #v7.0.2
-        with:
-          name: coverage
-          path: coverage/
-          retention-days: 14
 
   shellcheck:
     name: shellcheck entrypoint
     runs-on: cx-public-ubuntu-x64
     timeout-minutes: 5
     steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd #v6.0.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
+      # entrypoint.sh runs under busybox ash in the action image
       - name: Lint entrypoint.sh
-        run: docker run --rm -v "${PWD}:/mnt:ro" koalaman/shellcheck@sha256:2097951f02e735b613f4a34de20c40f937a6c8f18ecb170612c88c34517221fb --shell=busybox --severity=error entrypoint.sh
-
-  publish-badge:
-    name: publish coverage badge
-    needs: test
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    runs-on: cx-public-ubuntu-x64
-    timeout-minutes: 5
-    concurrency:
-      group: coverage-badge
-      cancel-in-progress: false
-    permissions:
-      contents: write # permission to publish coverage to the badge branch
-    steps:
-      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 #v8.0.2
-        with:
-          name: coverage
-          path: coverage
-      - name: Push badge to the badges branch
-        env:
-          GH_TOKEN: ${{ github.token }}
-          REPO: ${{ github.repository }}
-        run: |
-          set -euo pipefail
-          AUTH="Authorization: basic $(printf 'x-access-token:%s' "${GH_TOKEN}" | base64 -w0)"
-          git init -q badges-repo
-          cd badges-repo
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git remote add origin "https://github.com/${REPO}.git"
-          if git -c "http.extraheader=${AUTH}" fetch -q --depth=1 origin badges; then
-            git checkout -q -b badges FETCH_HEAD
-          else
-            git checkout -q --orphan badges
-          fi
-          cp ../coverage/badge.json coverage.json
-          git add coverage.json
-          if git rev-parse -q --verify HEAD > /dev/null && git diff --cached --quiet; then
-            echo "Badge unchanged"
-            exit 0
-          fi
-          git commit -q -m "chore: update coverage badge"
-          git -c "http.extraheader=${AUTH}" push -q origin HEAD:badges
+        run: docker run --rm -v "${PWD}:/mnt:ro" koalaman/shellcheck@sha256:2097951f02e735b613f4a34de20c40f937a6c8f18ecb170612c88c34517221fb --shell=busybox --severity=error entrypoint.sh # v0.10.0

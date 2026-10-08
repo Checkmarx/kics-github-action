@@ -70,6 +70,7 @@ test('inputs mapped to KICS flags', async (t) => {
         ['secrets_regexes_path', 'secrets.json', '-r'],
         ['ignore_on_exit', 'results', '--ignore-on-exit'],
         ['cloud_provider', 'aws,gcp', '--cloud-provider'],
+        ['queries', 'queries/custom,queries/team', '-q'],
     ]
     for (const [input, value, flag] of valued) {
         await t.test(`${input} -> ${flag} ${value}`, async (t) => {
@@ -202,4 +203,22 @@ test('whole action: entrypoint, KICS, JavaScript stage and GitHub', async (t) =>
         const run = await runEntrypoint(t, { runMain: true, results: kicsResults(), inputs: { output_formats: 'sarif' } })
         assert.equal(fs.existsSync(path.join(run.workspace, 'results.json')), false)
     })
+
+    await t.test('reports from a config file with a custom output-name are still picked up', knownBug('main.js only reads results.json, so a config with output-name makes the scan fail with ENOENT (#96, #106)'), async (t) => {
+        const run = await runEntrypoint(t, {
+            runMain: true,
+            results: kicsResults(),
+            resultsName: 'my-results',
+            workspaceFiles: { 'kics.json': JSON.stringify({ 'output-name': 'my-results' }) },
+            inputs: { config_path: 'kics.json', enable_jobs_summary: 'true' },
+        })
+        assert.match(run.summary, /\| TOTAL \| 4 \|/, run.stdout + run.stderr)
+    })
+
+    await t.test('results.json is left readable for the next workflow steps', knownBug('KICS runs as root and writes mode 600, so later steps and upload-sarif cannot read it (#130)'), async (t) => {
+        const run = await runEntrypoint(t, { results: kicsResults(), resultsMode: '600' })
+        const mode = fs.statSync(path.join(run.workspace, 'results.json')).mode
+        assert.notEqual(mode & 0o044, 0, `mode is ${(mode & 0o777).toString(8)}`)
+    })
 })
+
