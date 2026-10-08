@@ -3,6 +3,8 @@
 [![License: GPL-3.0](https://img.shields.io/badge/License-GPL3.0-yellow.svg)](https://www.gnu.org/licenses)
 [![Latest Release](https://img.shields.io/github/v/release/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/releases)
 [![Open Issues](https://img.shields.io/github/issues-raw/checkmarx/kics-github-action)](https://github.com/checkmarx/kics-github-action/issues)
+[![CI](https://github.com/Checkmarx/kics-github-action/actions/workflows/ci.yml/badge.svg?branch=master)](https://github.com/Checkmarx/kics-github-action/actions/workflows/ci.yml)
+[![Coverage](https://img.shields.io/endpoint?url=https%3A%2F%2Fraw.githubusercontent.com%2FCheckmarx%2Fkics-github-action%2Fbadges%2Fcoverage.json)](https://github.com/Checkmarx/kics-github-action/actions/workflows/ci.yml)
 
 - [KICS GitHub Action](#kics-github-action)
   - [Integrate KICS into your GitHub workflows](#integrate-kics-into-your-github-workflows)
@@ -20,6 +22,7 @@
   - [Uploading SARIF report](#uploading-sarif-report)
   - [Using configuration file](#using-configuration-file)
   - [How To Contribute](#how-to-contribute)
+    - [Running the tests](#running-the-tests)
 - [License](#license)
 
 ## Integrate KICS into your GitHub workflows
@@ -447,6 +450,24 @@ jobs:
 ## How To Contribute
 
 We welcome [issues](https://github.com/checkmarx/kics-github-action/issues) to and [pull requests](https://github.com/checkmarx/kics-github-action/pulls) against this repository!
+
+### Running the tests
+
+Requires Node.js 22 or newer.
+
+```sh
+npm ci
+npm test                # unit and end-to-end tests
+npm run test:coverage   # same, plus a coverage report and the coverage gate used by CI
+```
+
+Tests live under `test/`:
+
+- `test/unit` - the PR comment and job summary logic against a fake GitHub API
+- `test/e2e` - the action run as a workflow would run it: `src/main.js` as a process, `entrypoint.sh` against a fake `kics`, and the `action.yml` contract
+- `test/helpers` and `test/fixtures` - the fake GitHub API, KICS report builders and process runners
+
+Tests marked `todo` document known bugs and are expected to fail until the bug is fixed.
 
 # License
 
