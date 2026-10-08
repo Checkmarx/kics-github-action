@@ -165,6 +165,12 @@ test('workflow status follows the KICS exit code', async (t) => {
         assert.equal(run.warnings.length, 4, 'annotations emitted')
     })
 
+    await t.test('a clean scan still passes when commenting is forbidden, as on fork pull requests', async (t) => {
+        const fake = await startFakeGitHub(t, { failWith: 403 })
+        const run = await runAction(t, { results: kicsResults({ queries: [] }), kicsExitCode: '0', inputs: { enable_comments: 'true' }, apiUrl: fake.url })
+        assert.equal(run.code, 0)
+    })
+
     await t.test('fails when KICS fails and the PR comment cannot be posted', knownBug(SILENT_FAILURE), async (t) => {
         const fake = await startFakeGitHub(t, { failWith: 500 })
         const run = await runAction(t, { results: kicsResults(), kicsExitCode: KICS_FOUND_RESULTS, inputs: { enable_comments: 'true' }, apiUrl: fake.url })

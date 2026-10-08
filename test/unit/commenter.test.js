@@ -169,6 +169,15 @@ test('report content', async (t) => {
         assert.deepEqual(order, ['HIGH', 'LOW', 'INFO'])
     })
 
+    await t.test('has a row, with its icon, for every severity KICS can report', async (t) => {
+        const severities = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'INFO', 'TRACE']
+        const queries = severities.map((severity) => query({ severity, query_name: `${severity} query` }))
+        const body = await reportFor(t, kicsResults({ queries }))
+        for (const severity of severities) assert.match(body, new RegExp(`\\| !\\[${severity}\\]\\(https://[^)]+\\) \\| ${severity} \\| 1 \\|`), severity)
+        assert.match(body, /\| TOTAL \| 6 \|/)
+        assert.ok(!body.includes('undefined'))
+    })
+
     await t.test('shows scan metrics, with execution time computed from start and end', async (t) => {
         const body = await reportFor(t, kicsResults({ files_scanned: 12, files_parsed: 11, files_failed_to_scan: 1, queries_total: 280, queries_failed_to_execute: 2 }))
         assert.match(body, /Files scanned .*\| 12\n/)
