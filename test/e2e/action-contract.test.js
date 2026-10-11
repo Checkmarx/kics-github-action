@@ -16,7 +16,7 @@ const consumed = new Set([
 ])
 consumed.delete('INPUT_PARAM') // entrypoint.sh's own "-p <path>" variable, not an action input
 
-const KNOWN_UNUSED_INPUTS = { type: 'declared in action.yml but entrypoint.sh only reads platform_type, so `type:` is silently ignored' }
+const KNOWN_UNUSED_INPUTS = {}
 
 test('action.yml parsing assumptions hold', async (t) => {
     await t.test('declares inputs and the runs.env mappings the tests rely on', () => {
