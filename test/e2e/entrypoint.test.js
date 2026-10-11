@@ -216,8 +216,8 @@ test('whole action: entrypoint, KICS, JavaScript stage and GitHub', async (t) =>
         assert.match(run.summary, /\| TOTAL \| 4 \|/, run.stdout + run.stderr)
     })
 
-    await t.test('results.json is left readable for the next workflow steps', knownBug('KICS runs as root and writes mode 600, so later steps and upload-sarif cannot read it (#130)'), async (t) => {
-        const run = await runEntrypoint(t, { results: kicsResults(), resultsMode: '600' })
+    await t.test('results.json is left readable for the next workflow steps', async (t) => {
+        const run = await runEntrypoint(t, { results: kicsResults() })
         const mode = fs.statSync(path.join(run.workspace, 'results.json')).mode
         assert.notEqual(mode & 0o044, 0, `mode is ${(mode & 0o777).toString(8)}`)
     })
