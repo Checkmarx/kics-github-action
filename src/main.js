@@ -60,6 +60,9 @@ async function main() {
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
 
+    // the scan verdict comes first so a reporting failure can never hide it
+    setWorkflowStatus(exitCode);
+
     try {
         const octokit = github.getOctokit(githubToken);
         let context = {};
@@ -80,7 +83,13 @@ async function main() {
         enableComments = enableComments ? enableComments : "false"
         enableJobsSummary = enableJobsSummary ? enableJobsSummary : "false"
 
-        const parsedResults = readJSON(outputPath.resultsJSONFile);
+        let parsedResults;
+        try {
+            parsedResults = readJSON(outputPath.resultsJSONFile);
+        } catch (e) {
+            core.setFailed(`Could not read the KICS results: ${e.message}`);
+            return;
+        }
         if (enableAnnotations.toLocaleLowerCase() === "true") {
             annotator.annotateChangesWithResults(parsedResults);
         }
@@ -91,7 +100,6 @@ async function main() {
             await commenter.postJobSummary(parsedResults, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
         }
 
-        setWorkflowStatus(exitCode);
         await cleanupOutput(outputPath.resultsJSONFile, outputFormats);
     } catch (e) {
         console.error(e);
