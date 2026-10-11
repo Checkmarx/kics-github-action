@@ -102,7 +102,7 @@ test('inputs mapped to KICS flags', async (t) => {
         })
     }
 
-    await t.test('include_queries -> -i <ids>', knownBug('the flag is built from $INPUT_PROFILING instead of $INPUT_INCLUDE_QUERIES (#98)'), async (t) => {
+    await t.test('include_queries -> -i <ids>', async (t) => {
         const run = await runEntrypoint(t, { inputs: { include_queries: '229588ef-8fde-40c8-8756-f4f2b5825ded' } })
         assert.equal(flagValue(run.args, '-i'), '229588ef-8fde-40c8-8756-f4f2b5825ded')
     })
@@ -112,7 +112,7 @@ test('inputs mapped to KICS flags', async (t) => {
         assert.ok(run.args.includes('-m'), run.args.join(' '))
     })
 
-    await t.test('bom and include_queries do not borrow the value of profiling', knownBug('both flags are built from $INPUT_PROFILING (see #98)'), async (t) => {
+    await t.test('bom and include_queries do not borrow the value of profiling', async (t) => {
         const run = await runEntrypoint(t, { inputs: { bom: 'true', include_queries: 'q-1', profiling: 'CPU' } })
         assert.equal(flagValue(run.args, '--profiling'), 'CPU')
         assert.notEqual(flagValue(run.args, '-m'), 'CPU', 'bom is a switch, it takes no value')
