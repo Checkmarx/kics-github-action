@@ -80,7 +80,7 @@ async function main() {
         if (enableAnnotations.toLocaleLowerCase() === "true") {
             annotator.annotateChangesWithResults(parsedResults);
         }
-        if (enableComments.toLocaleLowerCase() === "true") {
+        if (enableComments.toLocaleLowerCase() === "true" && prNumber !== '') {
             await commenter.postPRComment(parsedResults, repo, prNumber, octokit, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
         }
         if (enableJobsSummary.toLocaleLowerCase() === "true") {

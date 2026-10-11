@@ -74,7 +74,7 @@ test('pull request comment', async (t) => {
         assert.match(fake.comments[0].body, /### Queries Results/)
     })
 
-    await t.test('is skipped without failing the step when not running for a pull request', knownBug('on push events prNumber is "", so the action calls /issues//comments, gets a 404 and swallows it'), async (t) => {
+    await t.test('is skipped without failing the step when not running for a pull request', async (t) => {
         const fake = await startFakeGitHub(t)
         const run = await runAction(t, { results: kicsResults(), inputs: { enable_comments: 'true' }, apiUrl: fake.url, event: 'push' })
         assert.equal(run.code, 0)
