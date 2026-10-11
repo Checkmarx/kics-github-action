@@ -30,7 +30,7 @@ test('required input', async (t) => {
         assert.equal(flagValue(run.args, '-p'), 'terraform,modules')
     })
 
-    await t.test('keeps a path containing spaces as one argument', knownBug('the unquoted $INPUT_PATH is word-split, so "my infra" becomes two arguments'), async (t) => {
+    await t.test('keeps a path containing spaces as one argument', async (t) => {
         const run = await runEntrypoint(t, { inputs: { path: 'my infra' } })
         assert.deepEqual(run.args.slice(run.args.indexOf('-p'), run.args.indexOf('-p') + 2), ['-p', 'my infra'])
     })
