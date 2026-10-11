@@ -129,7 +129,7 @@ test('GitHub comment size limit', async (t) => {
         assert.ok(postedBody(fake).length < MAX_COMMENT_LENGTH)
     })
 
-    await t.test('a huge report with queries still gets posted', knownBug('GitHub rejects bodies over 65536 characters with 422; the report must be truncated or split'), async (t) => {
+    await t.test('a huge report with queries still gets posted', async (t) => {
         const fake = await startFakeGitHub(t)
         const many = Array.from({ length: 400 }, (_, i) => finding({ file_name: `modules/service-${i}/main.tf`, line: i + 1 }))
         const results = kicsResults({ queries: [query({ files: many })] })
