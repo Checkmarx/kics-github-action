@@ -216,9 +216,19 @@ test('whole action: entrypoint, KICS, JavaScript stage and GitHub', async (t) =>
         assert.doesNotMatch(run.stdout, /^::(warning|error)/m)
     })
 
-    await t.test('the workspace is left without a results.json nobody asked for', knownBug('output_formats: sarif still leaves results.json in the workspace; main.js only removes the copy inside /app'), async (t) => {
+    await t.test('the workspace is left without a results.json nobody asked for', async (t) => {
         const run = await runEntrypoint(t, { runMain: true, results: kicsResults(), inputs: { output_formats: 'sarif' } })
         assert.equal(fs.existsSync(path.join(run.workspace, 'results.json')), false)
+    })
+
+    await t.test('the workspace is left without a results.json nobody asked for in output_path', async (t) => {
+        const run = await runEntrypoint(t, { runMain: true, results: kicsResults(), inputs: { output_formats: 'sarif', output_path: 'reports' } })
+        assert.equal(fs.existsSync(path.join(run.workspace, 'reports', 'results.json')), false)
+    })
+
+    await t.test('the workspace keeps the results.json when json was requested', async (t) => {
+        const run = await runEntrypoint(t, { runMain: true, results: kicsResults(), inputs: { output_formats: 'json' } })
+        assert.equal(fs.existsSync(path.join(run.workspace, 'results.json')), true)
     })
 
     await t.test('reports from a config file with a custom output-name are still picked up', knownBug('main.js only reads results.json, so a config with output-name makes the scan fail with ENOENT (#96, #106)'), async (t) => {

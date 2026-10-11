@@ -12,9 +12,13 @@ function readJSON(filename) {
     return parsedJSON;
 }
 
-function cleanupOutput(resultsJSONFile, outputFormats) {
+async function cleanupOutput(resultsJSONFile, outputFormats) {
     if (!outputFormats.toLowerCase().includes('json') || outputFormats === '') {
-        io.rmRF(resultsJSONFile);
+        // the entrypoint copied the report into the action dir, KICS wrote the original into the workspace
+        const copies = new Set([filepath.resolve(resultsJSONFile), filepath.resolve(process.env.GITHUB_WORKSPACE || '', resultsJSONFile)]);
+        for (const copy of copies) {
+            await io.rmRF(copy);
+        }
     }
 }
 
@@ -88,7 +92,7 @@ async function main() {
         }
 
         setWorkflowStatus(exitCode);
-        cleanupOutput(outputPath.resultsJSONFile, outputFormats);
+        await cleanupOutput(outputPath.resultsJSONFile, outputFormats);
     } catch (e) {
         console.error(e);
     }
