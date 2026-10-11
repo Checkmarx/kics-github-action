@@ -424,6 +424,7 @@ jobs:
           {
             "exclude-categories": "Encryption",
             "exclude-paths": "terraform/gcp/big_data.tf,terraform/gcp/gcs.tf",
+            "ignore-on-exit": "results",
             "log-file": true,
             "minimal-ui": false,
             "no-color": false,
