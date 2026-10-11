@@ -96,7 +96,7 @@ function createComment(results, withQueries = false, excludedColumnsForCommentsW
                 message += `| [${query[header]}](${query["query_url"]})`
                 return
             }
-            message += `| ${query[header].toString().replace("\n", " ")}`
+            message += `| ${query[header].toString().replace(/\r?\n/g, " ").replace(/\|/g, "\\|")}`
         })
         message += "|\n"
     })
