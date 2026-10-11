@@ -22,21 +22,21 @@ fi
 [[ ! -z "$INPUT_EXCLUDE_SEVERITIES" ]] && EXCLUDE_SEVERITIES_PARAM="--exclude-severities $INPUT_EXCLUDE_SEVERITIES"
 [[ ! -z "$INPUT_EXCLUDE_QUERIES" ]] && EXCLUDE_QUERIES_PARAM="--exclude-queries $INPUT_EXCLUDE_QUERIES"
 [[ ! -z "$INPUT_EXCLUDE_CATEGORIES" ]] && EXCLUDE_CATEGORIES_PARAM="--exclude-categories $INPUT_EXCLUDE_CATEGORIES"
-[[ ! -z "$INPUT_EXCLUDE_GITIGNORE" ]] && EXCLUDE_GITIGNORE="--exclude-gitignore"
+[[ "$INPUT_EXCLUDE_GITIGNORE" == "true" ]] && EXCLUDE_GITIGNORE="--exclude-gitignore"
 [[ ! -z "$INPUT_PLATFORM_TYPE" ]] && PLATFORM_TYPE_PARAM="--type $INPUT_PLATFORM_TYPE"
 [[ ! -z "$INPUT_FAIL_ON" ]] && FAIL_ON_PARAM="--fail-on $INPUT_FAIL_ON"
 [[ ! -z "$INPUT_TIMEOUT" ]] && TIMEOUT_PARAM="--timeout $INPUT_TIMEOUT"
 [[ ! -z "$INPUT_PROFILING" ]] && PROFILING_PARAM="--profiling $INPUT_PROFILING"
-[[ ! -z "$INPUT_BOM" ]] && BOM_PARAM="-m"
+[[ "$INPUT_BOM" == "true" ]] && BOM_PARAM="-m"
 [[ ! -z "$INPUT_INCLUDE_QUERIES" ]] && INCLUDE_QUERIES_PARAM="-i $INPUT_INCLUDE_QUERIES"
-[[ ! -z "$INPUT_DISABLE_SECRETS" ]] && DISABLE_SECRETS_PARAM="--disable-secrets"
-[[ ! -z "$INPUT_DISABLE_FULL_DESCRIPTIONS" ]] && DISABLE_FULL_DESCRIPTIONS_PARAM="--disable-full-descriptions"
+[[ "$INPUT_DISABLE_SECRETS" == "true" ]] && DISABLE_SECRETS_PARAM="--disable-secrets"
+[[ "$INPUT_DISABLE_FULL_DESCRIPTIONS" == "true" ]] && DISABLE_FULL_DESCRIPTIONS_PARAM="--disable-full-descriptions"
 [[ ! -z "$INPUT_LIBRARIES_PATH" ]] && LIBRARIES_PATH_PARAM="-b $INPUT_LIBRARIES_PATH"
 [[ ! -z "$INPUT_SECRETS_REGEXES_PATH" ]] && SECRETS_REGEXES_PATH_PARAM="-r $INPUT_SECRETS_REGEXES_PATH"
 [[ ! -z "$INPUT_IGNORE_ON_EXIT" ]] && IGNORE_ON_EXIT_PARAM="--ignore-on-exit $INPUT_IGNORE_ON_EXIT"
 [[ ! -z "$INPUT_CLOUD_PROVIDER" ]] && CLOUD_PROVIDER="--cloud-provider $INPUT_CLOUD_PROVIDER"
 
-[[ ! -z "$INPUT_VERBOSE" ]] && VERBOSE_PARAM="-v"
+[[ "$INPUT_VERBOSE" == "true" ]] && VERBOSE_PARAM="-v"
 
 #######################
 # Set Queries Path    #

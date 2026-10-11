@@ -84,6 +84,7 @@ test('inputs mapped to KICS flags', async (t) => {
         ['disable_secrets', '--disable-secrets'],
         ['disable_full_descriptions', '--disable-full-descriptions'],
         ['verbose', '-v'],
+        ['bom', '-m'],
     ]
     for (const [input, flag] of switches) {
         await t.test(`${input}: true -> ${flag}`, async (t) => {
@@ -96,7 +97,7 @@ test('inputs mapped to KICS flags', async (t) => {
             assert.ok(!run.args.includes(flag))
         })
 
-        await t.test(`${input}: false -> no ${flag}`, knownBug('any non-empty value, including "false", enables the flag (#121)'), async (t) => {
+        await t.test(`${input}: false -> no ${flag}`, async (t) => {
             const run = await runEntrypoint(t, { inputs: { [input]: 'false' } })
             assert.ok(!run.args.includes(flag), `${input}: false must not enable ${flag}: ${run.args.join(' ')}`)
         })
