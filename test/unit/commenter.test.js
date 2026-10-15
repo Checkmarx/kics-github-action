@@ -250,13 +250,13 @@ test('report content with queries', async (t) => {
         assert.equal(columns(rows[1]), columns(header))
     })
 
-    await t.test('keeps a multi-line value inside its table cell', knownBug('only the first newline is replaced, so a second one breaks the markdown table'), async (t) => {
+    await t.test('keeps a multi-line value inside its table cell', async (t) => {
         const multiline = finding({ actual_value: 'line one\nline two\nline three' })
         const { lines } = await withQueries(t, kicsResults({ queries: [query({ files: [multiline] })] }))
         assert.ok(lines.every((l) => l.startsWith('|')), `stray lines outside the table:\n${lines.join('\n')}`)
     })
 
-    await t.test('keeps a value containing a pipe inside its table cell', knownBug('unescaped | in a value (e.g. a regex in search_value) shifts every following column'), async (t) => {
+    await t.test('keeps a value containing a pipe inside its table cell', async (t) => {
         const piped = finding({ search_value: 'a|b' })
         const { header, rows } = await withQueries(t, kicsResults({ queries: [query({ files: [piped] })] }))
         const columns = (line) => line.replace(/\\\|/g, '').replace(/\|$/, '').split('|').length
