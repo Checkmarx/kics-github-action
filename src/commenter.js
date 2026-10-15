@@ -130,8 +130,13 @@ function computeHeaders(flattenedQueries) {
     return [...new Set(tmpHeader.map(v => v))]
 }
 
+const MAX_COMMENT_LENGTH = 65536;
+
 async function postPRComment(results, repo, prNumber, octokit, commentWithQueries = false, excludedColumnsForCommentsWithQueries) {
-    const message = createComment(results, commentWithQueries, excludedColumnsForCommentsWithQueries);
+    let message = createComment(results, commentWithQueries, excludedColumnsForCommentsWithQueries);
+    if (message.length > MAX_COMMENT_LENGTH) {
+        message = createComment(results) + "_The queries table was omitted: it exceeds the GitHub comment size limit._\n";
+    }
 
     const comments = await octokit.paginate(octokit.rest.issues.listComments, {
         ...repo,
