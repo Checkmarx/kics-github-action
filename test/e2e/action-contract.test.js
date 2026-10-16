@@ -5,7 +5,6 @@ const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
 const { ROOT, loadManifest, runnerInputEnv } = require('../helpers/action-manifest')
-const { knownBug } = require('../helpers/known-bug')
 
 const { inputs, env } = loadManifest()
 const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8')
@@ -15,7 +14,6 @@ const consumed = new Set([
     ...reads(read('src/main.js'), /process\.env\.(INPUT_[A-Z_]+)/g),
 ])
 consumed.delete('INPUT_PARAM') // entrypoint.sh's own "-p <path>" variable, not an action input
-
 
 test('action.yml parsing assumptions hold', async (t) => {
     await t.test('declares inputs and the runs.env mappings the tests rely on', () => {
@@ -43,8 +41,7 @@ test('every declared input is used by the code', async (t) => {
     const viaEnvMapping = new Set(Object.entries(env).filter(([key]) => consumed.has(key)).map(([, input]) => input))
     for (const name of Object.keys(inputs)) {
         const used = consumed.has(`INPUT_${name.toUpperCase()}`) || viaEnvMapping.has(name)
-        const options = name in KNOWN_UNUSED_INPUTS ? knownBug(KNOWN_UNUSED_INPUTS[name]) : {}
-        await t.test(name, options, () => assert.ok(used, `input "${name}" is declared but never read`))
+        await t.test(name, () => assert.ok(used, `input "${name}" is declared but never read`))
     }
 })
 

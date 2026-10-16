@@ -4,7 +4,6 @@ const test = require('node:test')
 const assert = require('node:assert/strict')
 const fs = require('node:fs')
 const path = require('node:path')
-const { knownBug } = require('../helpers/known-bug')
 const { ROOT, loadManifest } = require('../helpers/action-manifest')
 
 const read = (file) => fs.readFileSync(path.join(ROOT, file), 'utf8')
@@ -54,7 +53,6 @@ test('README', async (t) => {
     await t.test('has SARIF upload examples', () => assert.ok(sarifExamples.length > 0))
 
     for (const [i, block] of sarifExamples.entries()) {
-        const options = block.includes('config_path') ? knownBug('the config file example sets neither ignore_on_exit nor ignore-on-exit, so the job fails before the SARIF upload (#76)') : {}
-        await t.test(`SARIF upload example ${i + 1} does not fail before the upload`, options, () => assert.match(block, /ignore[_-]on[_-]exit/))
+        await t.test(`SARIF upload example ${i + 1} does not fail before the upload`, () => assert.match(block, /ignore[_-]on[_-]exit/))
     }
 })
