@@ -64,6 +64,7 @@ test('inputs mapped to KICS flags', async (t) => {
         ['exclude_categories', 'Observability,Backup', '--exclude-categories'],
         ['platform_type', 'Terraform,Dockerfile', '--type'],
         ['type', 'Ansible,Dockerfile', '--type'],
+        ['output_name', 'my-results', '--output-name'],
         ['fail_on', 'high,medium', '--fail-on'],
         ['timeout', '60', '--timeout'],
         ['profiling', 'CPU', '--profiling'],
@@ -93,6 +94,7 @@ test('inputs mapped to KICS flags', async (t) => {
         ['secrets_regexes_path', 'my dir/secret regexes.json', '-r'],
         ['queries', 'my queries,team queries', '-q'],
         ['output_path', 'my out', '-o'],
+        ['output_name', 'my results', '--output-name'],
     ]
     for (const [input, value, flag] of withSpaces) {
         await t.test(`${input} keeps a value containing spaces as one argument`, async (t) => {
@@ -100,6 +102,15 @@ test('inputs mapped to KICS flags', async (t) => {
             assert.equal(flagValue(run.args, flag), value, run.args.join(' '))
         })
     }
+
+    await t.test('output_name is given to KICS without the .json extension it appends itself', async (t) => {
+        const run = await runEntrypoint(t, { inputs: { output_name: 'my-results.json' } })
+        assert.equal(flagValue(run.args, '--output-name'), 'my-results')
+    })
+
+    await t.test('output_name left unset -> no --output-name', async (t) => {
+        assert.ok(!(await runEntrypoint(t)).args.includes('--output-name'))
+    })
 
     const switches = [
         ['exclude_gitignore', '--exclude-gitignore'],
@@ -246,6 +257,23 @@ test('whole action: entrypoint, KICS, JavaScript stage and GitHub', async (t) =>
             inputs: { config_path: 'kics.json', enable_jobs_summary: 'true' },
         })
         assert.match(run.summary, /\| TOTAL \| 4 \|/, run.stdout + run.stderr)
+    })
+
+    for (const name of ['my-results', 'my results', 'my-results.json']) {
+        await t.test(`reports named "${name}" through output_name are picked up`, async (t) => {
+            const run = await runEntrypoint(t, { runMain: true, results: kicsResults(), inputs: { output_name: name, enable_jobs_summary: 'true' } })
+            assert.match(run.summary, /\| TOTAL \| 4 \|/, run.stdout + run.stderr)
+        })
+    }
+
+    await t.test('reports named through output_name are picked up from output_path', async (t) => {
+        const run = await runEntrypoint(t, { runMain: true, results: kicsResults(), inputs: { output_name: 'my-results', output_path: 'reports', enable_jobs_summary: 'true' } })
+        assert.match(run.summary, /\| TOTAL \| 4 \|/, run.stdout + run.stderr)
+    })
+
+    await t.test('the workspace is left without the named report nobody asked for', async (t) => {
+        const run = await runEntrypoint(t, { runMain: true, results: kicsResults(), inputs: { output_name: 'my-results', output_formats: 'sarif' } })
+        assert.equal(fs.existsSync(path.join(run.workspace, 'my-results.json')), false)
     })
 
     await t.test('results.json is left readable for the next workflow steps', async (t) => {

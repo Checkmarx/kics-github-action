@@ -28,13 +28,18 @@ function sandboxedEntrypoint(sandbox) {
 const FAKE_KICS = `#!/bin/bash
 printf '%s\\n' "$@" > "$SANDBOX/kics-args.txt"
 out=./
+name=""
 while [ $# -gt 0 ]; do
   if [ "$1" = "-o" ]; then out="$2"; fi
+  if [ "$1" = "--output-name" ]; then name="$2"; fi
   shift
 done
+# like KICS: the name comes from --output-name (or the config file), and a trailing .json is not doubled
+name="\${name:-\${FAKE_KICS_NAME:-results}}"
+name="\${name%.json}"
 if [ -n "$FAKE_KICS_RESULTS" ]; then
   mkdir -p "$out"
-  file="$out/\${FAKE_KICS_NAME:-results}.json"
+  file="$out/$name.json"
   cp "$FAKE_KICS_RESULTS" "$file"
   chmod 755 "$file" # KICS v2.1.20 writes its reports world-readable
 fi
