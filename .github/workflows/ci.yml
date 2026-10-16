@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [master]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: tests and coverage
+    runs-on: cx-public-ubuntu-x64
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+      # Runner cannot reach registry.npmjs.org; install through the echohq registry, as in test_action.yaml
+      - name: Install dependencies through echohq registry
+        env:
+          ECHO_LIBRARIES_ACCESS_KEY: ${{ secrets.ECHO_LIBRARIES_ACCESS_KEY }}
+        run: |
+          NPMRC="${RUNNER_TEMP}/npmrc"
+          umask 077
+          printf 'registry=https://npm.echohq.com/\n//npm.echohq.com/:_authToken=%s\n' "${ECHO_LIBRARIES_ACCESS_KEY}" > "${NPMRC}"
+          npm ci --ignore-scripts --userconfig "${NPMRC}"
+          rm -f "${NPMRC}"
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+  shellcheck:
+    name: shellcheck entrypoint
+    runs-on: cx-public-ubuntu-x64
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      # entrypoint.sh runs under busybox ash in the action image
+      - name: Lint entrypoint.sh
+        run: docker run --rm -v "${PWD}:/mnt:ro" koalaman/shellcheck@sha256:2097951f02e735b613f4a34de20c40f937a6c8f18ecb170612c88c34517221fb --shell=busybox --severity=error entrypoint.sh # v0.10.0

@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "build": "ncc build src/main.js",
-    "format": "prettier --write **/*.ts"
+    "format": "prettier --write **/*.ts",
+    "test": "node --test \"test/**/*.test.js\"",
+    "test:coverage": "mkdir -p coverage && KNOWN_BUGS=skip node --test --experimental-test-coverage --test-coverage-lines=90 --test-coverage-branches=85 --test-coverage-functions=90 --test-coverage-include=\"src/**/*.js\" --test-reporter=spec --test-reporter-destination=stdout --test-reporter=lcov --test-reporter-destination=coverage/lcov.info \"test/**/*.test.js\""
   },
   "repository": {
     "type": "git",
@@ -20,16 +22,12 @@
   "homepage": "https://github.com/Checkmarx/kics-github-action#readme",
   "dependencies": {
     "@actions/core": "^1.10.1",
-    "@actions/exec": "^1.1.0",
     "@actions/github": "^5.0.0",
     "@actions/io": "^1.1.1",
-    "@actions/tool-cache": "^2.0.1",
-    "moment": "^2.29.4",
-    "uuid": "^8.3.2"
+    "moment": "^2.29.4"
   },
   "devDependencies": {
     "@vercel/ncc": "^0.36.1",
-    "prettier": "^2.4.1",
-    "@types/uuid": "^8.3.4"
+    "prettier": "^2.4.1"
   }
 }

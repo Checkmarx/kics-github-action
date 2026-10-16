@@ -12,9 +12,13 @@ function readJSON(filename) {
     return parsedJSON;
 }
 
-function cleanupOutput(resultsJSONFile, outputFormats) {
+async function cleanupOutput(resultsJSONFile, outputFormats) {
     if (!outputFormats.toLowerCase().includes('json') || outputFormats === '') {
-        io.rmRF(resultsJSONFile);
+        // the entrypoint copied the report into the action dir, KICS wrote the original into the workspace
+        const copies = new Set([filepath.resolve(resultsJSONFile), filepath.resolve(process.env.GITHUB_WORKSPACE || '', resultsJSONFile)]);
+        for (const copy of copies) {
+            await io.rmRF(copy);
+        }
     }
 }
 
@@ -57,6 +61,9 @@ async function main() {
     const outputFormats = process.env.INPUT_OUTPUT_FORMATS;
     const exitCode = process.env.KICS_EXIT_CODE
 
+    // the scan verdict comes first so a reporting failure can never hide it
+    setWorkflowStatus(exitCode);
+
     try {
         const octokit = github.getOctokit(githubToken);
         let context = {};
@@ -77,19 +84,24 @@ async function main() {
         enableComments = enableComments ? enableComments : "false"
         enableJobsSummary = enableJobsSummary ? enableJobsSummary : "false"
 
-        const parsedResults = readJSON(outputPath.resultsJSONFile);
+        let parsedResults;
+        try {
+            parsedResults = readJSON(outputPath.resultsJSONFile);
+        } catch (e) {
+            core.setFailed(`Could not read the KICS results: ${e.message}`);
+            return;
+        }
         if (enableAnnotations.toLocaleLowerCase() === "true") {
             annotator.annotateChangesWithResults(parsedResults);
         }
-        if (enableComments.toLocaleLowerCase() === "true") {
+        if (enableComments.toLocaleLowerCase() === "true" && prNumber !== '') {
             await commenter.postPRComment(parsedResults, repo, prNumber, octokit, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
         }
         if (enableJobsSummary.toLocaleLowerCase() === "true") {
             await commenter.postJobSummary(parsedResults, commentsWithQueries.toLocaleLowerCase() === "true", excludedColumnsForCommentsWithQueries);
         }
 
-        setWorkflowStatus(exitCode);
-        cleanupOutput(outputPath.resultsJSONFile, outputFormats);
+        await cleanupOutput(outputPath.resultsJSONFile, outputFormats);
     } catch (e) {
         console.error(e);
     }
