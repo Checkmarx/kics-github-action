@@ -8,16 +8,12 @@ const path = require('node:path')
 const { postPRComment, postJobSummary } = require('../../src/commenter')
 const { startFakeGitHub, humanComment, MAX_COMMENT_LENGTH } = require('../helpers/fake-github')
 const { kicsResults, query, finding } = require('../helpers/fixtures')
-const { knownBug } = require('../helpers/known-bug')
 
 const repo = { owner: 'o', repo: 'r' }
 const PR = 1
 const COMMENTS_PATH = '/repos/o/r/issues/1/comments'
 const kicsBody = '![kics-logo](https://example.com/logo.png)\nold report'
 const noExclusions = []
-
-// Pending fix: PR #163 (fix-duplicated-comment). Remove the `knownBug` markers once it is merged.
-const PR_163 = 'PR #163: comment lookup must paginate and match on the KICS marker, not the author'
 
 async function post(fake, results = kicsResults(), { withQueries = false, excluded = noExclusions, prNumber = PR } = {}) {
     await postPRComment(results, repo, prNumber, fake.octokit, withQueries, excluded)
@@ -81,7 +77,7 @@ test('PR comment lifecycle', async (t) => {
 })
 
 test('finding the existing KICS comment in a busy thread', async (t) => {
-    await t.test('updates it when buried past the first 30 comments', knownBug(PR_163), async (t) => {
+    await t.test('updates it when buried past the first 30 comments', async (t) => {
         const comments = Array.from({ length: 40 }, (_, i) => humanComment(i))
         comments.push({ id: 1000, user: { login: 'github-actions[bot]' }, body: kicsBody })
         const fake = await startFakeGitHub(t, { comments })
@@ -92,7 +88,7 @@ test('finding the existing KICS comment in a busy thread', async (t) => {
         assert.ok(!fake.calls().some((c) => c.startsWith('POST')), 'must not create a duplicate')
     })
 
-    await t.test('updates it when it is on page 3 of 100+ comments per page', knownBug(PR_163), async (t) => {
+    await t.test('updates it when it is on page 3 of 100+ comments per page', async (t) => {
         const comments = Array.from({ length: 250 }, (_, i) => humanComment(i))
         comments.push({ id: 1000, user: { login: 'github-actions[bot]' }, body: kicsBody })
         const fake = await startFakeGitHub(t, { comments })
@@ -104,13 +100,13 @@ test('finding the existing KICS comment in a busy thread', async (t) => {
         assert.ok(fake.requests.filter((r) => r.method === 'GET').length <= 3, 'lists 100 comments per page, not 30')
     })
 
-    await t.test('updates it when it was posted by an author other than github-actions[bot]', knownBug(PR_163), async (t) => {
+    await t.test('updates it when it was posted by an author other than github-actions[bot]', async (t) => {
         const fake = await startFakeGitHub(t, { comments: [{ id: 5, user: { login: 'my-app[bot]' }, body: kicsBody }] })
         await post(fake)
         assert.deepEqual(fake.writes().map((r) => `${r.method} ${r.path}`), ['PATCH /repos/o/r/issues/comments/5'])
     })
 
-    await t.test('updates the oldest KICS comment when duplicates already exist', knownBug(PR_163), async (t) => {
+    await t.test('updates the oldest KICS comment when duplicates already exist', async (t) => {
         const fake = await startFakeGitHub(t, {
             comments: [
                 { id: 10, user: { login: 'someone' }, body: kicsBody },
