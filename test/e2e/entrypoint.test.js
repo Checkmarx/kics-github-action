@@ -30,7 +30,7 @@ test('required input', async (t) => {
         assert.equal(flagValue(run.args, '-p'), 'terraform,modules')
     })
 
-    await t.test('keeps a path containing spaces as one argument', knownBug('the unquoted $INPUT_PATH is word-split, so "my infra" becomes two arguments'), async (t) => {
+    await t.test('keeps a path containing spaces as one argument', async (t) => {
         const run = await runEntrypoint(t, { inputs: { path: 'my infra' } })
         assert.deepEqual(run.args.slice(run.args.indexOf('-p'), run.args.indexOf('-p') + 2), ['-p', 'my infra'])
     })
@@ -44,7 +44,7 @@ test('baseline command line', async (t) => {
 
     await t.test('with no optional inputs, passes only path, output, report format and bundled queries', async (t) => {
         const run = await runEntrypoint(t)
-        assert.deepEqual(run.args, ['scan', '--no-progress', '-p', 'infra', '-o', './', '--report-formats', 'json', '-q', DEFAULT_QUERIES])
+        assert.deepEqual(run.args, ['scan', '--no-progress', '-p', 'infra', '--report-formats', 'json', '-q', DEFAULT_QUERIES, '-o', './'])
     })
 
     await t.test('uses the queries bundled in the image unless told otherwise', async (t) => {
@@ -74,6 +74,22 @@ test('inputs mapped to KICS flags', async (t) => {
     ]
     for (const [input, value, flag] of valued) {
         await t.test(`${input} -> ${flag} ${value}`, async (t) => {
+            const run = await runEntrypoint(t, { inputs: { [input]: value } })
+            assert.equal(flagValue(run.args, flag), value, run.args.join(' '))
+        })
+    }
+
+    const withSpaces = [
+        ['payload_path', 'my dir/payload file.json', '-d'],
+        ['config_path', 'my dir/kics config.json', '--config'],
+        ['exclude_paths', 'my dir/skip me,other dir/file.tf', '-e'],
+        ['libraries_path', 'my libs', '-b'],
+        ['secrets_regexes_path', 'my dir/secret regexes.json', '-r'],
+        ['queries', 'my queries,team queries', '-q'],
+        ['output_path', 'my out', '-o'],
+    ]
+    for (const [input, value, flag] of withSpaces) {
+        await t.test(`${input} keeps a value containing spaces as one argument`, async (t) => {
             const run = await runEntrypoint(t, { inputs: { [input]: value } })
             assert.equal(flagValue(run.args, flag), value, run.args.join(' '))
         })
