@@ -63,6 +63,7 @@ test('inputs mapped to KICS flags', async (t) => {
         ['exclude_queries', '11111111-2222-3333-4444-555555555555', '--exclude-queries'],
         ['exclude_categories', 'Observability,Backup', '--exclude-categories'],
         ['platform_type', 'Terraform,Dockerfile', '--type'],
+        ['type', 'Ansible,Dockerfile', '--type'],
         ['fail_on', 'high,medium', '--fail-on'],
         ['timeout', '60', '--timeout'],
         ['profiling', 'CPU', '--profiling'],
@@ -78,6 +79,11 @@ test('inputs mapped to KICS flags', async (t) => {
             assert.equal(flagValue(run.args, flag), value, run.args.join(' '))
         })
     }
+
+    await t.test('platform_type wins when type is set as well', async (t) => {
+        const run = await runEntrypoint(t, { inputs: { platform_type: 'Terraform', type: 'Ansible' } })
+        assert.equal(flagValue(run.args, '--type'), 'Terraform')
+    })
 
     const withSpaces = [
         ['payload_path', 'my dir/payload file.json', '-d'],
