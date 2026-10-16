@@ -5,12 +5,8 @@ const assert = require('node:assert/strict')
 const { runAction } = require('../helpers/run-action')
 const { startFakeGitHub, humanComment } = require('../helpers/fake-github')
 const { kicsResults, query, finding } = require('../helpers/fixtures')
-const { knownBug } = require('../helpers/known-bug')
 
 const KICS_FOUND_RESULTS = '50'
-
-const SILENT_FAILURE =
-    'main() swallows every exception, so a KICS failure is never reported when GitHub or results.json cannot be used'
 
 test('pull request comment', async (t) => {
     await t.test('is not posted unless enable_comments is on (the default)', async (t) => {
@@ -171,19 +167,19 @@ test('workflow status follows the KICS exit code', async (t) => {
         assert.equal(run.code, 0)
     })
 
-    await t.test('fails when KICS fails and the PR comment cannot be posted', knownBug(SILENT_FAILURE), async (t) => {
+    await t.test('fails when KICS fails and the PR comment cannot be posted', async (t) => {
         const fake = await startFakeGitHub(t, { failWith: 500 })
         const run = await runAction(t, { results: kicsResults(), kicsExitCode: KICS_FOUND_RESULTS, inputs: { enable_comments: 'true' }, apiUrl: fake.url })
         assert.equal(run.code, 1, 'a GitHub API outage must not turn a failed scan into a green build')
     })
 
-    await t.test('fails when KICS failed and wrote no results.json', knownBug(SILENT_FAILURE), async (t) => {
+    await t.test('fails when KICS failed and wrote no results.json', async (t) => {
         const run = await runAction(t, { kicsExitCode: '126' })
         assert.equal(run.code, 1, run.stdout + run.stderr)
         assert.ok(run.errors.length > 0)
     })
 
-    await t.test('reports a missing results.json instead of passing silently', knownBug(SILENT_FAILURE), async (t) => {
+    await t.test('reports a missing results.json instead of passing silently', async (t) => {
         const run = await runAction(t, { kicsExitCode: '0', inputs: { enable_comments: 'true' } })
         assert.notEqual(run.code, 0, 'the scan produced no report, which is not a success')
     })
