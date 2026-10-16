@@ -140,7 +140,6 @@ runs:
     - ${{ inputs.exclude_gitignore}}
     - ${{ inputs.output_formats }}
     - ${{ inputs.output_path }}
-    - ${{ inputs.output_name }}
     - ${{ inputs.payload_path }}
     - ${{ inputs.queries }}
     - ${{ inputs.verbose }}

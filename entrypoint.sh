@@ -66,7 +66,11 @@ fi
 # Check for Output Path    #
 ############################
 
-CP_PATH="./results.json"
+# KICS appends the extension itself, so a trailing .json would only confuse the file lookup
+INPUT_OUTPUT_NAME="${INPUT_OUTPUT_NAME%.json}"
+[[ ! -z "$INPUT_OUTPUT_NAME" ]] && set -- "$@" --output-name "$INPUT_OUTPUT_NAME"
+
+CP_PATH="./${INPUT_OUTPUT_NAME:-results}.json"
 if [ ! -z "$INPUT_OUTPUT_PATH" ]; then
     set -- "$@" -o "$INPUT_OUTPUT_PATH"
     CP_PATH=$INPUT_OUTPUT_PATH
