@@ -9,7 +9,7 @@ RUN --mount=type=secret,id=npmrc,target=/root/.npmrc,required=false npm ci
 COPY src ./src
 RUN npm run build
 
-FROM docker.io/checkmarx/kics:v2.1.20@sha256:3e5a268eb8adda2e5a483c9359ddfc4cd520ab856a7076dc0b1d8784a37e2602 AS kics-env
+FROM docker.io/checkmarx/kics:v2.2.1@sha256:49ccc54b6ae7f5d5fc95e96f8f95c18c57f3bba047ab611a03d80792bdff6757 AS kics-env
 
 FROM cgr.dev/chainguard/node:latest@sha256:f6aa5d5b1fa68ab77a3512b606534e22a8afc3a04fb22db95430bb850e433664
 
