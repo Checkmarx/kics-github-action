@@ -1,7 +1,6 @@
 'use strict'
 
 const http = require('node:http')
-const github = require('@actions/github')
 
 const MAX_COMMENT_LENGTH = 65536
 const DEFAULT_PER_PAGE = 30
@@ -82,6 +81,9 @@ async function startFakeGitHub(t, { comments = [], failWith } = {}) {
         return new Promise((resolve) => server.close(resolve))
     }
     t.after(close)
+
+    // @actions/github is ESM-only
+    const github = await import('@actions/github')
 
     return {
         url,
