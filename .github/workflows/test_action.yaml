@@ -37,7 +37,7 @@ jobs:
           docker build --target builder --secret "id=npmrc,src=${NPMRC}" .
           rm -f "${NPMRC}"
       - name: Test KICS action
-        uses: ./
+        uses: ./ # zizmor: ignore[self-repository] '$/' makes the runner download the repo tarball, which fails on the dead_symlink test fixture
         with:
           path: test/samples/positive1.tf,test/samples/positive2.tf
           token: ${{ secrets.GITHUB_TOKEN }}
