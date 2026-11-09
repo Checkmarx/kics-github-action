@@ -1,7 +1,6 @@
 const commenter = require("./commenter");
 const annotator = require("./annotator");
 const core = require("@actions/core");
-const github = require("@actions/github");
 const io = require("@actions/io");
 const filepath = require('path');
 const fs = require("fs");
@@ -65,6 +64,8 @@ async function main() {
     setWorkflowStatus(exitCode);
 
     try {
+        // @actions/github is ESM-only, so it has to be loaded with import()
+        const github = await import("@actions/github");
         const octokit = github.getOctokit(githubToken);
         let context = {};
         let repo = '';
