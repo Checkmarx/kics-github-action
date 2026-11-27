@@ -68,7 +68,22 @@ fi
 
 # KICS appends the extension itself, so a trailing .json would only confuse the file lookup
 INPUT_OUTPUT_NAME="${INPUT_OUTPUT_NAME%.json}"
-[[ ! -z "$INPUT_OUTPUT_NAME" ]] && set -- "$@" --output-name "$INPUT_OUTPUT_NAME"
+cd "$GITHUB_WORKSPACE"
+if [ -n "$INPUT_OUTPUT_NAME" ]; then
+    set -- "$@" --output-name "$INPUT_OUTPUT_NAME"
+elif [ -n "$INPUT_CONFIG_PATH" ]; then
+    # KICS still reads the config itself and reports any config errors.
+    INPUT_OUTPUT_NAME=$(node -e '
+        const { readFileSync } = require("node:fs");
+        try {
+            const name = JSON.parse(readFileSync(process.argv[1], "utf8"))?.["output-name"];
+            if (typeof name === "string" && !/[\/\\\r\n\0]/.test(name)) {
+                process.stdout.write(name.replace(/\.json$/, ""));
+            }
+        } catch {}
+    ' -- "$INPUT_CONFIG_PATH")
+fi
+export INPUT_OUTPUT_NAME
 
 CP_PATH="./${INPUT_OUTPUT_NAME:-results}.json"
 if [ ! -z "$INPUT_OUTPUT_PATH" ]; then
@@ -81,7 +96,6 @@ fi
 ####################
 # Run KICS Scan    #
 ####################
-cd "$GITHUB_WORKSPACE"
 echo "${DATETIME} - INF : about to scan directory $INPUT_PATH"
 echo "${DATETIME} - INF : kics command kics -p $INPUT_PATH $OUTPUT_FORMATS_PARAM $PLATFORM_TYPE_PARAM $EXCLUDE_CATEGORIES_PARAM $EXCLUDE_RESULTS_PARAM $EXCLUDE_SEVERITIES_PARAM $EXCLUDE_QUERIES_PARAM $EXCLUDE_GITIGNORE $VERBOSE_PARAM $IGNORE_ON_EXIT_PARAM $FAIL_ON_PARAM $TIMEOUT_PARAM $PROFILING_PARAM $BOM_PARAM $INCLUDE_QUERIES_PARAM $DISABLE_SECRETS_PARAM $DISABLE_FULL_DESCRIPTIONS_PARAM $CLOUD_PROVIDER $*"
 /app/bin/kics scan --no-progress -p "$INPUT_PATH" $OUTPUT_FORMATS_PARAM $PLATFORM_TYPE_PARAM $EXCLUDE_CATEGORIES_PARAM $EXCLUDE_RESULTS_PARAM $EXCLUDE_SEVERITIES_PARAM $EXCLUDE_QUERIES_PARAM $EXCLUDE_GITIGNORE $VERBOSE_PARAM $IGNORE_ON_EXIT_PARAM $FAIL_ON_PARAM $TIMEOUT_PARAM $PROFILING_PARAM $BOM_PARAM $INCLUDE_QUERIES_PARAM $DISABLE_SECRETS_PARAM $DISABLE_FULL_DESCRIPTIONS_PARAM $CLOUD_PROVIDER "$@"

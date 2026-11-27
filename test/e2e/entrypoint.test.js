@@ -7,7 +7,6 @@ const path = require('node:path')
 const { runEntrypoint, flagValue } = require('../helpers/run-entrypoint')
 const { startFakeGitHub } = require('../helpers/fake-github')
 const { kicsResults } = require('../helpers/fixtures')
-const { knownBug } = require('../helpers/known-bug')
 
 const DEFAULT_QUERIES = '/app/bin/assets/queries'
 
@@ -248,13 +247,13 @@ test('whole action: entrypoint, KICS, JavaScript stage and GitHub', async (t) =>
         assert.equal(fs.existsSync(path.join(run.workspace, 'results.json')), true)
     })
 
-    await t.test('reports from a config file with a custom output-name are still picked up', knownBug('main.js only reads results.json, so a config with output-name makes the scan fail with ENOENT (#96, #106)'), async (t) => {
+    await t.test('reports from a config file with a custom output-name are still picked up', async (t) => {
         const run = await runEntrypoint(t, {
             runMain: true,
             results: kicsResults(),
             resultsName: 'my-results',
             workspaceFiles: { 'kics.json': JSON.stringify({ 'output-name': 'my-results' }) },
-            inputs: { config_path: 'kics.json', enable_jobs_summary: 'true' },
+            inputs: { config_path: 'kics.json', output_path: 'reports', enable_jobs_summary: 'true' },
         })
         assert.match(run.summary, /\| TOTAL \| 4 \|/, run.stdout + run.stderr)
     })
