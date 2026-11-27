@@ -47,6 +47,7 @@ exit "\${FAKE_KICS_EXIT:-0}"
 `
 
 const NODE_SHIM = `#!/bin/bash
+if [ "$1" = "-e" ]; then exec "$REAL_NODE" "$@"; fi
 { echo "cwd=$(pwd)"; echo "args=$*"; echo "KICS_EXIT_CODE=$KICS_EXIT_CODE"; } > "$SANDBOX/node-call.txt"
 if [ -n "$RUN_MAIN" ]; then exec "$REAL_NODE" "$MAIN_JS"; fi
 `
